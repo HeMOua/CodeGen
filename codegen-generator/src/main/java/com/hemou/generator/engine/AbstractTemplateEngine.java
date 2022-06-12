@@ -38,19 +38,25 @@ public abstract class AbstractTemplateEngine {
     public AbstractTemplateEngine batchOutput() {
         resultMap = new HashMap<>();
         try {
-            List<Map<String, Object>> infoList = getConfigBuilder().getInfoList();
-            Map<String, Object> commonMap = getCommonObjectMap();
-            for (Map<String, Object> objectMap : infoList) {
-                objectMap.putAll(commonMap);
-                InjectionConfig injectionConfig = getConfigBuilder().getInjectionConfig();
-                if (null != injectionConfig) {
-                    injectionConfig.initMap();
-                    objectMap.put("cfg", injectionConfig.getMap());
-                }
-                List<TemplateConfig> templateList = getConfigBuilder().getTemplateList();
-                if (!CollectionUtils.isEmpty(templateList)) {
-                    for (TemplateConfig tc : templateList) {
-                        resultMap.put(tc.getFilePath(), writer(objectMap, tc.getTemplateContent()));
+            InjectionConfig injectionConfig = getConfigBuilder().getInjectionConfig();
+            List<TemplateConfig> templateList = injectionConfig.getTemplateList();
+            Map<String, Object> defaultMap = new HashMap<>();
+            if (!CollectionUtils.isEmpty(templateList)) {
+                // 注入数据
+                injectionConfig.initMap();
+                defaultMap.putAll(injectionConfig.getMap());
+                // 公共数据
+                defaultMap.putAll(getCommonObjectMap());
+                for (TemplateConfig tc : templateList) {
+                    List<Map<String, Object>> infoList = getConfigBuilder().getInfoList();
+                    if (!CollectionUtils.isEmpty(infoList)) {
+                        // 数据源数据
+                        for (Map<String, Object> objectMapMap : infoList) {
+                            objectMapMap.putAll(defaultMap);
+                            resultMap.put(tc.getFilePath(), writer(objectMapMap, tc));
+                        }
+                    } else {
+                        resultMap.put(tc.getFilePath(), writer(defaultMap, tc));
                     }
                 }
             }
@@ -64,9 +70,9 @@ public abstract class AbstractTemplateEngine {
      * 将模板转化成为字符串
      *
      * @param objectMap       渲染对象 MAP 信息
-     * @param templateContent 模板文件
+     * @param templateConfig  模板文件
      */
-    public abstract String writer(Map<String, Object> objectMap, String templateContent) throws Exception;
+    public abstract String writer(Map<String, Object> objectMap, TemplateConfig templateConfig) throws Exception;
 
     /**
      * 获取公共 Map 信息
@@ -74,11 +80,14 @@ public abstract class AbstractTemplateEngine {
     public Map<String, Object> getCommonObjectMap() {
         Map<String, Object> objectMap = new HashMap<>(30);
         ConfigBuilder config = getConfigBuilder();
-        objectMap.put("config", config);
+        objectMap.put("_config", config);
 
         GlobalConfig globalConfig = config.getGlobalConfig();
-        objectMap.put("project", getProjectInfoMap(globalConfig));
-        objectMap.put("time", getTimeInfoMap());
+        objectMap.put("_author", globalConfig.getAuthor());
+        objectMap.put("_email", globalConfig.getEmail());
+        objectMap.put("_mobile", globalConfig.getMobile());
+        objectMap.put("_project", getProjectInfoMap(globalConfig));
+        objectMap.put("_time", getTimeInfoMap());
 
         return objectMap;
     }
@@ -101,30 +110,30 @@ public abstract class AbstractTemplateEngine {
         Map<String, Object> objectMap = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
-        objectMap.put("yyyy", year);
-        objectMap.put("yy", year % 100);
-        objectMap.put("MM", calendar.get(Calendar.MONTH) + 1);
-        objectMap.put("dd", calendar.get(Calendar.DATE));
+        objectMap.put("yyyy", formatDateNumber(null, year, 4));
+        objectMap.put("yy", formatDateNumber(null, year % 100, 2));
+        objectMap.put("MM", formatDateNumber(null, calendar.get(Calendar.MONTH) + 1, 2));
+        objectMap.put("dd", formatDateNumber(calendar, Calendar.DATE, 2));
         objectMap.put("weekOfMonth", calendar.get(Calendar.WEEK_OF_MONTH));
         objectMap.put("weekOfYear", calendar.get(Calendar.WEEK_OF_YEAR));
         objectMap.put("dayOfWeek", calendar.get(Calendar.DAY_OF_WEEK));
         objectMap.put("dayOfMonth", calendar.get(Calendar.DAY_OF_MONTH));
         objectMap.put("dayOfYear", calendar.get(Calendar.DAY_OF_YEAR));
-        objectMap.put("HH", calendar.get(Calendar.HOUR_OF_DAY));
-        objectMap.put("hh", calendar.get(Calendar.HOUR));
-        objectMap.put("mm", calendar.get(Calendar.MINUTE));
-        objectMap.put("ss", calendar.get(Calendar.SECOND));
-        objectMap.put("sss", calendar.get(Calendar.MILLISECOND));
+        objectMap.put("HH", formatDateNumber(calendar, Calendar.HOUR_OF_DAY, 2));
+        objectMap.put("hh", formatDateNumber(calendar, Calendar.HOUR, 2));
+        objectMap.put("mm", formatDateNumber(calendar, Calendar.MINUTE, 2));
+        objectMap.put("ss", formatDateNumber(calendar, Calendar.SECOND, 2));
+        objectMap.put("sss", formatDateNumber(calendar, Calendar.MILLISECOND, 3));
         return objectMap;
+    }
+
+    private String formatDateNumber(Calendar c, int field, int length) {
+        int num = c != null ? c.get(field) : field;
+        return String.format("%0" + length + "d", num);
     }
 
     public ConfigBuilder getConfigBuilder() {
         return configBuilder;
-    }
-
-    public AbstractTemplateEngine setConfigBuilder(ConfigBuilder configBuilder) {
-        this.configBuilder = configBuilder;
-        return this;
     }
 
     public Map<String, String> getResultMap() {

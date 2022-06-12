@@ -1,8 +1,7 @@
 package com.hemou.generator.enums;
 
+import com.hemou.generator.config.rules.EngineType;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EngineTypeTest {
 

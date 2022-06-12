@@ -1,9 +1,14 @@
 package com.hemou.generator.config;
 
 import com.hemou.generator.config.builder.ConfigBuilder;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
+import java.util.List;
 import java.util.Map;
 
+@Data
+@Accessors(chain = true)
 public abstract class InjectionConfig {
 
     /**
@@ -22,6 +27,11 @@ public abstract class InjectionConfig {
     public abstract void initMap();
 
     /**
+     * 模板列表
+     */
+    private List<TemplateConfig> templateList;
+
+    /**
      * 模板待渲染 Object Map 预处理<br>
      * 方法： getObjectMap 结果处理
      */
@@ -29,19 +39,4 @@ public abstract class InjectionConfig {
         return objectMap;
     }
 
-    public ConfigBuilder getConfig() {
-        return config;
-    }
-
-    public void setConfig(ConfigBuilder config) {
-        this.config = config;
-    }
-
-    public Map<String, Object> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, Object> map) {
-        this.map = map;
-    }
 }

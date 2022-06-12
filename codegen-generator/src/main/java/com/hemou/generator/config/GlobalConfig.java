@@ -1,8 +1,12 @@
 package com.hemou.generator.config;
 
 import com.hemou.generator.config.rules.DateType;
-import com.hemou.generator.enums.IdType;
+import com.hemou.generator.config.rules.IdType;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
+@Data
+@Accessors(chain = true)
 public class GlobalConfig {
 
     /**
@@ -54,84 +58,4 @@ public class GlobalConfig {
      * 指定生成的主键的ID类型
      */
     private IdType idType;
-
-    public boolean isFileOverride() {
-        return fileOverride;
-    }
-
-    public void setFileOverride(boolean fileOverride) {
-        this.fileOverride = fileOverride;
-    }
-
-    public boolean isEnableCache() {
-        return enableCache;
-    }
-
-    public void setEnableCache(boolean enableCache) {
-        this.enableCache = enableCache;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
-    public String getProjectEnName() {
-        return projectEnName;
-    }
-
-    public void setProjectEnName(String projectEnName) {
-        this.projectEnName = projectEnName;
-    }
-
-    public String getProjectZhName() {
-        return projectZhName;
-    }
-
-    public void setProjectZhName(String projectZhName) {
-        this.projectZhName = projectZhName;
-    }
-
-    public String getProjectDesc() {
-        return projectDesc;
-    }
-
-    public void setProjectDesc(String projectDesc) {
-        this.projectDesc = projectDesc;
-    }
-
-    public DateType getDateType() {
-        return dateType;
-    }
-
-    public void setDateType(DateType dateType) {
-        this.dateType = dateType;
-    }
-
-    public IdType getIdType() {
-        return idType;
-    }
-
-    public void setIdType(IdType idType) {
-        this.idType = idType;
-    }
 }
