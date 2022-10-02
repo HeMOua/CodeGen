@@ -1,9 +1,9 @@
 package com.hemou.generator.enums;
 
 import com.hemou.generator.config.rules.EngineType;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-class EngineTypeTest {
+public class EngineTypeTest {
 
     @Test
     public void testEngine() {

@@ -45,16 +45,19 @@ public class ConfigBuilder {
     private GlobalConfig globalConfig;
 
     /**
-     * 注入配置信息
+     * 模板配置信息
      */
     private TemplateConfig templateConfig;
 
 
-    public ConfigBuilder(GlobalConfig globalConfig, DataSourceConfig dataSourceConfig, StrategyConfig strategyConfig) {
+    public ConfigBuilder(GlobalConfig globalConfig, DataSourceConfig dataSourceConfig,
+                         StrategyConfig strategyConfig, TemplateConfig templateConfig) {
         // 全局配置
         this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(GeneratorBuilder::globalConfig);
         // 策略配置
         this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(GeneratorBuilder::strategyConfig);
+        // 模板配置
+        this.templateConfig = templateConfig;
         // 数据源配置
         this.dataSourceConfig = dataSourceConfig;
     }

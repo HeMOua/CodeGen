@@ -1,14 +1,13 @@
 package com.hemou.generator.engine;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-class AbstractTemplateEngineTest {
+public class AbstractTemplateEngineTest {
 
     @Test
     public void getTimeInfoMap() {

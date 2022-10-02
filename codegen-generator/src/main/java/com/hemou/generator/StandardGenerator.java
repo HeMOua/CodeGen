@@ -64,7 +64,7 @@ public class StandardGenerator {
         logger.debug("==========================准备生成文件...==========================");
         // 初始化配置
         if (null == config) {
-            config = new ConfigBuilder(globalConfig, dataSource, strategy);
+            config = new ConfigBuilder(globalConfig, dataSource, strategy, templateConfig);
         }
         if (null == templateEngine) {
             // 默认采用 Velocity 引擎
