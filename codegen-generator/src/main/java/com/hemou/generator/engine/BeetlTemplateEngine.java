@@ -1,7 +1,8 @@
 package com.hemou.generator.engine;
 
-import com.hemou.generator.config.TemplateInfo;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.ResultInfo;
+import com.hemou.generator.config.po.TemplateInfo;
 import org.beetl.core.Configuration;
 import org.beetl.core.GroupTemplate;
 import org.beetl.core.Template;
@@ -27,8 +28,16 @@ public class BeetlTemplateEngine extends AbstractTemplateEngine {
     }
 
     @Override
-    public String writer(Map<String, Object> objectMap, TemplateInfo templateInfo) throws Exception {
-        Template template = groupTemplate.getTemplate(templateInfo.getTemplateContent());
+    public ResultInfo writer(Map<String, Object> objectMap, TemplateInfo template) throws Exception {
+        return new ResultInfo(
+            writer(objectMap, template.getFilePath()),
+            writer(objectMap, template.getFileName()),
+            writer(objectMap, template.getContent())
+        );
+    }
+
+    private String writer(Map<String, Object> objectMap, String templateContent) throws Exception {
+        Template template = groupTemplate.getTemplate(templateContent);
         StringWriter writer = new StringWriter();
         template.binding(objectMap);
         template.renderTo(writer);

@@ -2,9 +2,10 @@ package com.hemou.generator;
 
 import com.hemou.generator.config.DataSourceConfig;
 import com.hemou.generator.config.GlobalConfig;
-import com.hemou.generator.config.TemplateConfig;
 import com.hemou.generator.config.StrategyConfig;
+import com.hemou.generator.config.TemplateConfig;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.ResultInfo;
 import com.hemou.generator.engine.AbstractTemplateEngine;
 import com.hemou.generator.engine.FreemarkerTemplateEngine;
 import lombok.Data;
@@ -12,7 +13,7 @@ import lombok.experimental.Accessors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.List;
 
 @Data
 @Accessors(chain = true)
@@ -53,14 +54,14 @@ public class StandardGenerator {
     /**
      * 生成代码
      */
-    public Map<String, String> execute() {
+    public List<ResultInfo> execute() {
         return this.execute(null);
     }
 
     /**
      * 生成代码
      */
-    public Map<String, String> execute(AbstractTemplateEngine templateEngine) {
+    public List<ResultInfo> execute(AbstractTemplateEngine templateEngine) {
         logger.debug("==========================准备生成文件...==========================");
         // 初始化配置
         if (null == config) {
@@ -72,8 +73,8 @@ public class StandardGenerator {
         }
         templateEngine.setConfigBuilder(config);
         // 模板引擎初始化执行文件输出
-        Map<String, String> resultMap = templateEngine.init(config).batchOutput().getResultMap();
+        List<ResultInfo> resultList = templateEngine.init(config).batchOutput().getResultList();
         logger.debug("==========================文件生成完成！！！==========================");
-        return resultMap;
+        return resultList;
     }
 }

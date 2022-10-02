@@ -1,6 +1,7 @@
 package com.hemou.generator.config;
 
 import com.hemou.generator.config.po.TableInfo;
+import com.hemou.generator.config.po.TemplateInfo;
 
 import java.util.ArrayList;
 import java.util.HashMap;

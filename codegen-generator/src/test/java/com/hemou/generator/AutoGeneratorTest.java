@@ -2,13 +2,13 @@ package com.hemou.generator;
 
 import com.hemou.generator.config.GlobalConfig;
 import com.hemou.generator.config.TemplateConfig;
-import com.hemou.generator.config.TemplateInfo;
+import com.hemou.generator.config.po.ResultInfo;
+import com.hemou.generator.config.po.TemplateInfo;
 import com.hemou.generator.config.rules.EngineType;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class AutoGeneratorTest {
 
@@ -29,26 +29,37 @@ public class AutoGeneratorTest {
 
         // template_1
         TemplateInfo templateInfo = new TemplateInfo();
+        templateInfo.setFileName("${_author}.java");
         templateInfo.setEngineType(EngineType.Beetl);
         templateInfo.setIdentity("1");
         String templateStr = "${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
         templateStr += "\n[(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n";
-        templateInfo.setTemplateContent(templateStr);
-        templateInfo.setFilePath("src\\Demo1.java");
+        templateInfo.setContent(templateStr);
+        templateInfo.setFilePath("src");
         templateInfos.add(templateInfo);
 
         // template_2
         TemplateInfo templateInfo2 = new TemplateInfo();
+        templateInfo2.setFileName("${_author}.java");
         templateInfo2.setEngineType(EngineType.Thymeleaf);
         templateInfo2.setIdentity("2");
         templateStr = "${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
         templateStr += "\n[(${_time.yyyy})][(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n" +
                 "[(${comment})]";
-        templateInfo2.setTemplateContent(templateStr);
-        templateInfo2.setFilePath("src\\Demo2.java");
+        templateInfo2.setContent(templateStr);
+        templateInfo2.setFilePath("src\\[(${_author})].java");
         templateInfos.add(templateInfo2);
+
+        TemplateInfo templateInfo3 = new TemplateInfo();
+        templateInfo3.setFileName("${_author}.java");
+        templateInfo3.setEngineType(EngineType.Thymeleaf);
+        templateInfo3.setIdentity("2");
+        templateStr = "老表不爱我，${_author}";
+        templateInfo3.setContent(templateStr);
+        templateInfo3.setFilePath("src\\[(${_author})].java");
+        templateInfos.add(templateInfo3);
 
         generator.setTemplateConfig(
                 new TemplateConfig
@@ -57,7 +68,7 @@ public class AutoGeneratorTest {
                         .build()
         );
 
-        Map<String, String> result = generator.execute();
+        List<ResultInfo> result = generator.execute();
         System.out.println(result);
     }
 }

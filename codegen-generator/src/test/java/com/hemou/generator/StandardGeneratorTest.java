@@ -2,14 +2,14 @@ package com.hemou.generator;
 
 import com.hemou.generator.config.GlobalConfig;
 import com.hemou.generator.config.TemplateConfig;
-import com.hemou.generator.config.TemplateInfo;
+import com.hemou.generator.config.po.ResultInfo;
+import com.hemou.generator.config.po.TemplateInfo;
 import com.hemou.generator.engine.ThymeleafTemplateEngine;
 import org.junit.Test;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class StandardGeneratorTest {
 
@@ -31,13 +31,13 @@ public class StandardGeneratorTest {
         String templateStr = "${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
         templateStr += "\n[(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n";
-        templateInfo.setTemplateContent(templateStr);
+        templateInfo.setContent(templateStr);
         templateInfo.setFilePath("src\\Demo1.java");
         templateInfos.add(templateInfo);
 
         generator.setTemplateConfig(new TemplateConfig.Builder().templateList(templateInfos).build());
 
-        Map<String, String> result = generator.execute(new ThymeleafTemplateEngine());
+        List<ResultInfo> result = generator.execute(new ThymeleafTemplateEngine());
         System.out.println(result);
     }
 

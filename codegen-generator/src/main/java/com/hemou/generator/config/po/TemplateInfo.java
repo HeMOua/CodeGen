@@ -1,4 +1,4 @@
-package com.hemou.generator.config;
+package com.hemou.generator.config.po;
 
 import com.hemou.generator.config.rules.EngineType;
 import lombok.Data;
@@ -14,17 +14,22 @@ public class TemplateInfo {
     private EngineType engineType;
 
     /**
-     * 模板标识
+     * 模板唯一标识
      */
     private String identity;
 
     /**
      * 模板内容
      */
-    private String templateContent;
+    private String content;
 
     /**
      * 模板文件路径
      */
     private String filePath;
+
+    /**
+     * 文件名
+     */
+    private String fileName;
 }

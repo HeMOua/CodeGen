@@ -2,7 +2,9 @@ package com.hemou.generator;
 
 import com.hemou.generator.config.*;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.ResultInfo;
 import com.hemou.generator.config.po.TableInfo;
+import com.hemou.generator.config.po.TemplateInfo;
 import com.hemou.generator.config.rules.EngineType;
 import com.hemou.generator.engine.AbstractTemplateEngine;
 import com.hemou.generator.utils.GenUtils;
@@ -12,6 +14,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,20 +58,20 @@ public class AutoGenerator {
     /**
      * 生成代码
      */
-    public Map<String, String> execute() {
+    public List<ResultInfo> execute() {
         logger.debug("==========================准备生成文件...==========================");
         // 初始化配置
         if (null == config) {
             config = new ConfigBuilder(globalConfig, dataSource, strategy, templateConfig);
         }
         // 模板引擎初始化执行文件输出
-        Map<String, String> resultMap = batchOutput();
+        List<ResultInfo> resultList = batchOutput();
         logger.debug("==========================文件生成完成！！！==========================");
-        return resultMap;
+        return resultList;
     }
 
-    private Map<String, String> batchOutput() {
-        Map<String, String> resultMap = new HashMap<>();
+    private List<ResultInfo> batchOutput() {
+        List<ResultInfo> resultList = new ArrayList<>();
         try {
             TemplateConfig templateConfig = config.getTemplateConfig();
             List<TemplateInfo> templateList = templateConfig.getTemplateList();
@@ -81,17 +84,17 @@ public class AutoGenerator {
                 if (infoList != null && infoList.size() > 0) { // 数据源数据不为空
                     for (TableInfo infoMap : infoList) {
                         templateConfig.beforeRender(infoMap, objectMap);
-                        resultMap.put(template.getFilePath(), engine.writer(objectMap, template));
+                        resultList.add(engine.writer(objectMap, template));
                     }
                 } else { // 若数据源数据为空
                     templateConfig.beforeRender(null, objectMap);
-                    resultMap.put(template.getFilePath(), engine.writer(objectMap, template));
+                    resultList.add(engine.writer(objectMap, template));
                 }
             }
         } catch (Exception e) {
             logger.error("无法渲染模板，请检查配置信息！", e);
         }
-        return resultMap;
+        return resultList;
     }
 
     private AbstractTemplateEngine getEngine(TemplateInfo templateInfo) {
