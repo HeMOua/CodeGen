@@ -1,38 +1,38 @@
 package com.hemou.generator.config.builder;
 
-import com.hemou.generator.config.*;
-import com.hemou.generator.config.rules.DbType;
+import com.hemou.generator.config.DataSourceConfig;
+import com.hemou.generator.config.GlobalConfig;
+import com.hemou.generator.config.StrategyConfig;
+import com.hemou.generator.config.TemplateConfig;
+import com.hemou.generator.config.po.TableInfo;
+import com.hemou.generator.config.querys.IDatabaseQuery;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Data
 @Accessors(chain = true)
 public class ConfigBuilder {
 
     /**
+     * 过滤正则
+     */
+    private static final Pattern REGX = Pattern.compile("[~!/@#$%^&*()+\\\\\\[\\]|{};:'\",<.>?]+");
+
+    /**
      * 数据库配置
      */
 
     private final DataSourceConfig dataSourceConfig;
-    /**
-     * SQL连接
-     */
-    private Connection connection;
-
-    /**
-     * SQL语句类型
-     */
-    private IDbQuery dbQuery;
 
     /**
      * 数据信息
      */
-    private List<Map<String, Object>> infoList;
+    private List<TableInfo> tableInfoList = new ArrayList<>();
 
     /**
      * 策略配置
@@ -47,61 +47,35 @@ public class ConfigBuilder {
     /**
      * 注入配置信息
      */
-    private InjectionConfig injectionConfig;
-
-    /**
-     * 是否支持注释
-     */
-    private boolean commentSupported;
+    private TemplateConfig templateConfig;
 
 
     public ConfigBuilder(GlobalConfig globalConfig, DataSourceConfig dataSourceConfig, StrategyConfig strategyConfig) {
         // 全局配置
-        if (null == globalConfig) {
-            this.globalConfig = new GlobalConfig();
-        } else {
-            this.globalConfig = globalConfig;
-        }
+        this.globalConfig = Optional.ofNullable(globalConfig).orElseGet(GeneratorBuilder::globalConfig);
         // 策略配置
-        if (null == strategyConfig) {
-            this.strategyConfig = new StrategyConfig();
-        } else {
-            this.strategyConfig = strategyConfig;
-        }
+        this.strategyConfig = Optional.ofNullable(strategyConfig).orElseGet(GeneratorBuilder::strategyConfig);
         // 数据源配置
         this.dataSourceConfig = dataSourceConfig;
-        if (null != dataSourceConfig) {
-            handlerDataSource(dataSourceConfig);
-            handlerStrategy(this.strategyConfig);
+    }
+
+    public List<TableInfo> getTableInfoList() {
+        if (dataSourceConfig != null && tableInfoList.isEmpty()) {
+            List<TableInfo> tableInfos = new IDatabaseQuery.DefaultDatabaseQuery(this).queryTables();
+            if (!tableInfos.isEmpty()) {
+                this.tableInfoList.addAll(tableInfos);
+            }
         }
+        return tableInfoList;
     }
 
     /**
-     * 处理数据源配置
+     * 判断表名是否为正则表名(这表名规范比较随意,只能尽量匹配上特殊符号)
      *
-     * @param config DataSourceConfig
+     * @param tableName 表名
+     * @return 是否正则
      */
-    private void handlerDataSource(DataSourceConfig config) {
-        connection = config.getConn();
-        dbQuery = config.getDbQuery();
-    }
-
-    /**
-     * 处理数据库表 加载数据库表、列、注释相关数据集
-     *
-     * @param config StrategyConfig
-     */
-    private void handlerStrategy(StrategyConfig config) {
-        commentSupported = config.isCommentSupported();
-        if (commentSupported) {
-            //SQLITE 数据库不支持注释获取
-            commentSupported = !dataSourceConfig.getDbType().equals(DbType.SQLITE);
-        }
-        infoList = getInfo(config);
-    }
-
-    private List<Map<String, Object>> getInfo(StrategyConfig config) {
-        List<Map<String, Object>> infoList = new ArrayList<>();
-        return infoList;
+    public static boolean matcherRegTable(String tableName) {
+        return REGX.matcher(tableName).find();
     }
 }

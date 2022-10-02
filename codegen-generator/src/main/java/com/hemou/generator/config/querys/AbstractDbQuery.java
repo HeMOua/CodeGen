@@ -1,7 +1,5 @@
 package com.hemou.generator.config.querys;
 
-import com.hemou.generator.config.IDbQuery;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

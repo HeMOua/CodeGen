@@ -1,17 +1,9 @@
 package com.hemou.generator.config.querys;
 
-import com.hemou.generator.config.rules.DbType;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class MySqlQuery extends AbstractDbQuery {
-
-    @Override
-    public DbType dbType() {
-        return DbType.MYSQL;
-    }
-
 
     @Override
     public String tablesSql() {

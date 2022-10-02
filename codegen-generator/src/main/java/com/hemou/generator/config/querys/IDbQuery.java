@@ -1,17 +1,9 @@
-package com.hemou.generator.config;
-
-import com.hemou.generator.config.rules.DbType;
+package com.hemou.generator.config.querys;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public interface IDbQuery {
-
-    /**
-     * 数据库类型
-     */
-    DbType dbType();
-
 
     /**
      * 表信息查询 SQL

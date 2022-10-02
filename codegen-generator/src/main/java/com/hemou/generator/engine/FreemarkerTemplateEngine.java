@@ -1,6 +1,6 @@
 package com.hemou.generator.engine;
 
-import com.hemou.generator.config.TemplateConfig;
+import com.hemou.generator.config.TemplateInfo;
 import com.hemou.generator.config.builder.ConfigBuilder;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
@@ -18,7 +18,6 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
 
     @Override
     public FreemarkerTemplateEngine init(ConfigBuilder configBuilder) {
-        super.init(configBuilder);
         configuration = new Configuration(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
         // 默认编码
         configuration.setDefaultEncoding(StandardCharsets.UTF_8.name());
@@ -28,16 +27,16 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
         StringTemplateLoader templateLoader = new StringTemplateLoader();
         configuration.setTemplateLoader(templateLoader);
         // 加载字符串模板
-        List<TemplateConfig> templateList = configBuilder.getInjectionConfig().getTemplateList();
-        for (TemplateConfig tc : templateList) {
+        List<TemplateInfo> templateList = configBuilder.getTemplateConfig().getTemplateList();
+        for (TemplateInfo tc : templateList) {
             templateLoader.putTemplate(tc.getIdentity(), tc.getTemplateContent());
         }
         return this;
     }
 
     @Override
-    public String writer(Map<String, Object> objectMap, TemplateConfig templateConfig) throws Exception {
-        Template template = configuration.getTemplate(templateConfig.getIdentity());
+    public String writer(Map<String, Object> objectMap, TemplateInfo templateInfo) throws Exception {
+        Template template = configuration.getTemplate(templateInfo.getIdentity());
         StringWriter writer = new StringWriter();
         template.process(objectMap, writer);
         return writer.toString();

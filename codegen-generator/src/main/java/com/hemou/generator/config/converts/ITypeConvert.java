@@ -1,5 +1,6 @@
-package com.hemou.generator.config;
+package com.hemou.generator.config.converts;
 
+import com.hemou.generator.config.GlobalConfig;
 import com.hemou.generator.config.po.TableField;
 import com.hemou.generator.config.rules.IColumnType;
 

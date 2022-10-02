@@ -1,14 +1,20 @@
 package com.hemou.generator.engine;
 
 import com.hemou.generator.config.GlobalConfig;
-import com.hemou.generator.config.InjectionConfig;
 import com.hemou.generator.config.TemplateConfig;
+import com.hemou.generator.config.TemplateInfo;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.TableInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.hemou.generator.utils.DateUtils.*;
 
 public abstract class AbstractTemplateEngine {
 
@@ -27,10 +33,7 @@ public abstract class AbstractTemplateEngine {
     /**
      * 模板引擎初始化
      */
-    public AbstractTemplateEngine init(ConfigBuilder configBuilder) {
-        this.configBuilder = configBuilder;
-        return this;
-    }
+    public abstract AbstractTemplateEngine init(ConfigBuilder configBuilder);
 
     /**
      * 批量代码生成
@@ -38,26 +41,22 @@ public abstract class AbstractTemplateEngine {
     public AbstractTemplateEngine batchOutput() {
         resultMap = new HashMap<>();
         try {
-            InjectionConfig injectionConfig = getConfigBuilder().getInjectionConfig();
-            List<TemplateConfig> templateList = injectionConfig.getTemplateList();
-            Map<String, Object> defaultMap = new HashMap<>();
-            if (!CollectionUtils.isEmpty(templateList)) {
-                // 注入数据
-                injectionConfig.initMap();
-                defaultMap.putAll(injectionConfig.getMap());
-                // 公共数据
-                defaultMap.putAll(getCommonObjectMap());
-                for (TemplateConfig tc : templateList) {
-                    List<Map<String, Object>> infoList = getConfigBuilder().getInfoList();
-                    if (!CollectionUtils.isEmpty(infoList)) {
-                        // 数据源数据
-                        for (Map<String, Object> objectMapMap : infoList) {
-                            objectMapMap.putAll(defaultMap);
-                            resultMap.put(tc.getFilePath(), writer(objectMapMap, tc));
-                        }
-                    } else {
-                        resultMap.put(tc.getFilePath(), writer(defaultMap, tc));
+            ConfigBuilder config = this.getConfigBuilder();
+            TemplateConfig templateConfig = config.getTemplateConfig();
+            List<TemplateInfo> templateList = templateConfig.getTemplateList();
+            List<TableInfo> infoList = config.getTableInfoList();
+
+            Map<String, Object> commonMap = getCommonObjectMap();
+            for (TemplateInfo template : templateList) {
+                Map<String, Object> objectMap = new HashMap<>(commonMap);
+                if (!CollectionUtils.isEmpty(infoList)) { // 数据源数据不为空
+                    for (TableInfo infoMap : infoList) {
+                        templateConfig.beforeRender(infoMap, objectMap);
+                        resultMap.put(template.getFilePath(), writer(objectMap, template));
                     }
+                } else { // 若数据源数据为空
+                    templateConfig.beforeRender(null, objectMap);
+                    resultMap.put(template.getFilePath(), writer(objectMap, template));
                 }
             }
         } catch (Exception e) {
@@ -70,9 +69,9 @@ public abstract class AbstractTemplateEngine {
      * 将模板转化成为字符串
      *
      * @param objectMap       渲染对象 MAP 信息
-     * @param templateConfig  模板文件
+     * @param templateInfo  模板文件
      */
-    public abstract String writer(Map<String, Object> objectMap, TemplateConfig templateConfig) throws Exception;
+    public abstract String writer(Map<String, Object> objectMap, TemplateInfo templateInfo) throws Exception;
 
     /**
      * 获取公共 Map 信息
@@ -110,9 +109,9 @@ public abstract class AbstractTemplateEngine {
         Map<String, Object> objectMap = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
-        objectMap.put("yyyy", formatDateNumber(null, year, 4));
-        objectMap.put("yy", formatDateNumber(null, year % 100, 2));
-        objectMap.put("MM", formatDateNumber(null, calendar.get(Calendar.MONTH) + 1, 2));
+        objectMap.put("yyyy", formatDateNumber(year, 4));
+        objectMap.put("yy", formatDateNumber(year % 100, 2));
+        objectMap.put("MM", formatDateNumber(calendar.get(Calendar.MONTH) + 1, 2));
         objectMap.put("dd", formatDateNumber(calendar, Calendar.DATE, 2));
         objectMap.put("weekOfMonth", calendar.get(Calendar.WEEK_OF_MONTH));
         objectMap.put("weekOfYear", calendar.get(Calendar.WEEK_OF_YEAR));
@@ -124,12 +123,14 @@ public abstract class AbstractTemplateEngine {
         objectMap.put("mm", formatDateNumber(calendar, Calendar.MINUTE, 2));
         objectMap.put("ss", formatDateNumber(calendar, Calendar.SECOND, 2));
         objectMap.put("sss", formatDateNumber(calendar, Calendar.MILLISECOND, 3));
+        objectMap.put("date", formatDate(calendar));
+        objectMap.put("time", formatTime(calendar));
+        objectMap.put("time_12", formatSimpleTime(calendar));
         return objectMap;
     }
 
-    private String formatDateNumber(Calendar c, int field, int length) {
-        int num = c != null ? c.get(field) : field;
-        return String.format("%0" + length + "d", num);
+    public void setConfigBuilder(ConfigBuilder configBuilder) {
+        this.configBuilder = configBuilder;
     }
 
     public ConfigBuilder getConfigBuilder() {

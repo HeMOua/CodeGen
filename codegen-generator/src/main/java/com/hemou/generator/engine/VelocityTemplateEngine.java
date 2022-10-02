@@ -1,6 +1,6 @@
 package com.hemou.generator.engine;
 
-import com.hemou.generator.config.TemplateConfig;
+import com.hemou.generator.config.TemplateInfo;
 import com.hemou.generator.config.builder.ConfigBuilder;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -17,7 +17,6 @@ public class VelocityTemplateEngine extends AbstractTemplateEngine {
 
     @Override
     public AbstractTemplateEngine init(ConfigBuilder configBuilder) {
-        super.init(configBuilder);
         if (null == velocityEngine) {
             Properties p = new Properties();
             p.setProperty("resource.loaders", "string");
@@ -32,13 +31,13 @@ public class VelocityTemplateEngine extends AbstractTemplateEngine {
     }
 
     @Override
-    public String writer(Map<String, Object> objectMap, TemplateConfig templateConfig) throws Exception {
+    public String writer(Map<String, Object> objectMap, TemplateInfo templateInfo) throws Exception {
         VelocityContext context = new VelocityContext();
         if (objectMap != null) {
             objectMap.forEach(context::put);
         }
         StringWriter writer = new StringWriter();
-        velocityEngine.evaluate(context, writer, "Velocity Code Generate", templateConfig.getTemplateContent());
+        velocityEngine.evaluate(context, writer, "Velocity Code Generate", templateInfo.getTemplateContent());
         return writer.toString();
     }
 }
