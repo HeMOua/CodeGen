@@ -114,12 +114,12 @@ public class DbQueryDecorator extends AbstractDbQuery {
     }
 
     @Override
-    public boolean isKeyIdentity(ResultSet results) throws SQLException {
+    public boolean isKeyIdentity(ResultSet results) {
         try {
             return dbQuery.isKeyIdentity(results);
         } catch (SQLException e) {
             logger.warn("判断主键自增错误:{}", e.getMessage());
-            // TODO ignore 这个看到在查H2的时候出了异常，先忽略这个异常了.
+            // ignore 这个看到在查H2的时候出了异常，先忽略这个异常了.
         }
         return false;
     }

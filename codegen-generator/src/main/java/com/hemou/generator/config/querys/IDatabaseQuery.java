@@ -4,16 +4,17 @@ import com.hemou.generator.config.DataSourceConfig;
 import com.hemou.generator.config.GlobalConfig;
 import com.hemou.generator.config.StrategyConfig;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.TableField;
 import com.hemou.generator.config.po.TableInfo;
 import com.hemou.generator.config.rules.DbType;
+import com.hemou.generator.config.rules.IColumnType;
+import com.hemou.generator.jdbc.DatabaseMetaDataWrapper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class IDatabaseQuery {
@@ -115,16 +116,59 @@ public abstract class IDatabaseQuery {
                 tableList.forEach(this::convertTableFields);
                 return tableList;
             } catch (Exception e) {
-
+                throw new RuntimeException(e);
+            } finally {
+                dbQuery.closeConnection();
             }
-
-            return null;
         }
 
         private void convertTableFields(TableInfo tableInfo) {
             DbType dbType = this.dataSourceConfig.getDbType();
             String tableName = tableInfo.getName();
-
+            try {
+                final Map<String, DatabaseMetaDataWrapper.ColumnsInfo> columnsMetaInfoMap = new HashMap<>();
+                Map<String, DatabaseMetaDataWrapper.ColumnsInfo> columnsInfo =
+                        new DatabaseMetaDataWrapper(dbQuery.getConnection()).getColumnsInfo(null, dataSourceConfig.getSchemaName(), tableName);
+                if (columnsInfo != null && !columnsInfo.isEmpty()) {
+                    columnsMetaInfoMap.putAll(columnsInfo);
+                }
+                String tableFieldsSql = dbQuery.tableFieldsSql(tableName);
+                Set<String> h2PkColumns = new HashSet<>();
+                if (DbType.H2 == dbType) {
+                    dbQuery.execute(String.format(H2Query.PK_QUERY_SQL, tableName), result -> {
+                        String primaryKey = result.getStringResult(dbQuery.fieldKey());
+                        if (Boolean.parseBoolean(primaryKey)) {
+                            h2PkColumns.add(result.getStringResult(dbQuery.fieldName()));
+                        }
+                    });
+                }
+                dbQuery.execute(tableFieldsSql, result -> {
+                    String columnName = result.getStringResult(dbQuery.fieldName());
+                    TableField field = new TableField(this.configBuilder, columnName);
+                    // 避免多重主键设置，目前只取第一个找到ID，并放到list中的索引为0的位置
+                    boolean isId = DbType.H2 == dbType ? h2PkColumns.contains(columnName) : result.isPrimaryKey();
+                    // 处理ID
+                    if (isId) {
+                        field.primaryKey(dbQuery.isKeyIdentity(result.getResultSet()));
+                        tableInfo.setHavePrimaryKey(true);
+                        if (field.isKeyIdentityFlag()) {
+                            LOGGER.warn("当前表[{}]的主键为自增主键，会导致全局主键的ID类型设置失效!", tableName);
+                        }
+                    }
+                    field.setColumnName(columnName)
+                            .setType(result.getStringResult(dbQuery.fieldType()))
+                            .setComment(result.getFieldComment())
+                            .setCustomMap(dbQuery.getCustomFields(result.getResultSet()));
+                    String propertyName = strategyConfig.getNameConvert().propertyNameConvert(field);
+                    IColumnType columnType = dataSourceConfig.getTypeConvert().processTypeConvert(globalConfig, field);
+                    field.setPropertyName(propertyName, columnType);
+                    field.setMetaInfo(new TableField.MetaInfo(columnsMetaInfoMap.get(columnName.toLowerCase())));
+                    tableInfo.addField(field);
+                });
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+            tableInfo.processTable();
         }
     }
 }

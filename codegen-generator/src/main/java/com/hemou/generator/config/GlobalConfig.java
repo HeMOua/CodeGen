@@ -88,12 +88,6 @@ public class GlobalConfig {
         return dateType;
     }
 
-    /**
-     * 全局配置构建
-     *
-     * @author nieqiurong 2020/10/11.
-     * @since 3.5.0
-     */
     public static class Builder implements IConfigBuilder<GlobalConfig> {
 
         private final GlobalConfig globalConfig;

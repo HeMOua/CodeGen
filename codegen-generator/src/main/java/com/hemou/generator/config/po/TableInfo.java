@@ -26,6 +26,10 @@ public class TableInfo {
      */
     private final GlobalConfig globalConfig;
 
+
+    /** 使用的模板（crud单表操作 tree树表操作 sub主子表操作） */
+    private String type;
+
     /**
      * 包导入信息
      */
@@ -76,7 +80,6 @@ public class TableInfo {
      *
      * @param configBuilder 配置构建
      * @param name          表名
-     * @since 3.5.0
      */
     public TableInfo(ConfigBuilder configBuilder, String name) {
         this.strategyConfig = configBuilder.getStrategyConfig();
@@ -84,5 +87,35 @@ public class TableInfo {
         this.name = name;
     }
 
+    /**
+     * 添加字段
+     *
+     * @param field 字段
+     */
+    public void addField(TableField field) {
+        if (strategyConfig.matchIgnoreColumns(field.getColumnName())) {
+            // 忽略字段不在处理
+            return;
+        } else if (strategyConfig.matchSuperEntityColumns(field.getColumnName())) {
+            this.commonFields.add(field);
+        } else {
+            this.fields.add(field);
+        }
+    }
 
+    /**
+     * 处理表信息(文件名与导包)
+     */
+    public void processTable() {
+        String entityName = strategyConfig.getNameConvert().entityNameConvert(this);
+        this.setEntityName(strategyConfig.getConverterFileName().convert(entityName));
+        this.importPackage();
+    }
+
+    /**
+     * 导包处理
+     */
+    public void importPackage() {
+
+    }
 }

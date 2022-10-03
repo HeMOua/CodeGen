@@ -110,7 +110,7 @@ public class DataSourceConfig {
     public ITypeConvert getTypeConvert() {
         if (null == typeConvert) {
             DbType dbType = getDbType();
-            ITypeConvert typeConvert = TypeConverts.getTypeConvert(dbType);
+            typeConvert = TypeConverts.getTypeConvert(dbType);
             if (null == typeConvert) {
                 typeConvert = MySqlTypeConvert.INSTANCE;
             }
@@ -133,7 +133,7 @@ public class DataSourceConfig {
                     if (dataSource != null) {
                         connection = dataSource.getConnection();
                     } else {
-                        this.connection = DriverManager.getConnection(url, username, password);
+                        connection = DriverManager.getConnection(url, username, password);
                     }
                 }
             }

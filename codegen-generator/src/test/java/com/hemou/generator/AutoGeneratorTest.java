@@ -1,5 +1,6 @@
 package com.hemou.generator;
 
+import com.hemou.generator.config.DataSourceConfig;
 import com.hemou.generator.config.GlobalConfig;
 import com.hemou.generator.config.TemplateConfig;
 import com.hemou.generator.config.po.ResultInfo;
@@ -24,6 +25,11 @@ public class AutoGeneratorTest {
                 .build();
         generator.setGlobalConfig(globalConfig);
 
+        DataSourceConfig dataSourceConfig = new DataSourceConfig.Builder(
+                "jdbc:mysql://localhost:3306/music?characterEncoding=UTF-8&useUnicode=true&useInformationSchema=true",
+                "root", "root").build();
+        generator.setDataSource(dataSourceConfig);
+
         // Template
         List<TemplateInfo> templateInfos = new ArrayList<>();
 
@@ -32,7 +38,7 @@ public class AutoGeneratorTest {
         templateInfo.setFileName("${_author}.java");
         templateInfo.setEngineType(EngineType.Beetl);
         templateInfo.setIdentity("1");
-        String templateStr = "${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
+        String templateStr = "{}${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
         templateStr += "\n[(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n";
         templateInfo.setContent(templateStr);

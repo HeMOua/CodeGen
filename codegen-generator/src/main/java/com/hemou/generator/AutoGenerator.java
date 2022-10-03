@@ -82,8 +82,8 @@ public class AutoGenerator {
                 AbstractTemplateEngine engine = getEngine(template);
                 Map<String, Object> objectMap = new HashMap<>(commonMap);
                 if (infoList != null && infoList.size() > 0) { // 数据源数据不为空
-                    for (TableInfo infoMap : infoList) {
-                        templateConfig.beforeRender(infoMap, objectMap);
+                    for (TableInfo tableInfo : infoList) {
+                        templateConfig.beforeRender(tableInfo, objectMap);
                         resultList.add(engine.writer(objectMap, template));
                     }
                 } else { // 若数据源数据为空

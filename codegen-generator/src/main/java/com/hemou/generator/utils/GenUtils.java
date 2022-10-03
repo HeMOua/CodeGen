@@ -1,7 +1,9 @@
 package com.hemou.generator.utils;
 
 import com.hemou.generator.config.GlobalConfig;
+import com.hemou.generator.config.StrategyConfig;
 import com.hemou.generator.config.builder.ConfigBuilder;
+import com.hemou.generator.config.po.TableInfo;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -17,15 +19,17 @@ public class GenUtils {
      */
     public static Map<String, Object> getCommonObjectMap(ConfigBuilder config) {
         Map<String, Object> objectMap = new HashMap<>(30);
-        objectMap.put("_config", config);
-
+        // 全局配置
         GlobalConfig globalConfig = config.getGlobalConfig();
         objectMap.put("_author", globalConfig.getAuthor());
         objectMap.put("_email", globalConfig.getEmail());
         objectMap.put("_mobile", globalConfig.getMobile());
+        objectMap.put("_kotlin", globalConfig.isKotlin());
+        objectMap.put("_swagger", globalConfig.isSwagger());
         objectMap.put("_project", getProjectInfoMap(globalConfig));
-        objectMap.put("_time", getTimeInfoMap());
-
+        objectMap.put("_time", getTimeInfo());
+        // 策略配置
+        StrategyConfig strategyConfig = config.getStrategyConfig();
         return objectMap;
     }
 
@@ -41,9 +45,27 @@ public class GenUtils {
     }
 
     /**
+     * 获取策略信息
+     */
+    private static Map<String, Object> getStrategyConfig(StrategyConfig strategyConfig) {
+        return null;
+    }
+
+    /**
+     * 获取数据表信息
+     * @return
+     */
+    private static Map<String, Object> getTableInfo(TableInfo tableInfo) {
+        Map<String, Object> objectMap = new HashMap<>();
+        objectMap.put("type", tableInfo.getType());
+
+        return objectMap;
+    }
+
+    /**
      * 获取时间信息
      */
-    private static Map<String, Object> getTimeInfoMap() {
+    private static Map<String, Object> getTimeInfo() {
         Map<String, Object> objectMap = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
