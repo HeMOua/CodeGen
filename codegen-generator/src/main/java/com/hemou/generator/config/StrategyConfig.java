@@ -1,14 +1,11 @@
 package com.hemou.generator.config;
 
-import com.hemou.generator.config.function.ConverterFileName;
 import com.hemou.generator.config.rules.IdType;
 import com.hemou.generator.config.rules.NamingStrategy;
 import com.hemou.generator.utils.StringUtils;
 import lombok.Getter;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 策略配置项
@@ -18,11 +15,9 @@ public class StrategyConfig {
 
     private StrategyConfig() {}
 
-    /**
-     * 指定生成的主键的ID类型
-     */
-    private IdType idType;
-
+    /////////////////////////////////////////////
+    //////////////////  公共策略  ////////////////
+    /////////////////////////////////////////////
     /**
      * 是否大写命名
      */
@@ -72,16 +67,6 @@ public class StrategyConfig {
     private final Set<String> exclude = new HashSet<>();
 
     /**
-     * 自定义基础的Entity类，公共字段
-     */
-    private final Set<String> superEntityColumns = new HashSet<>();
-
-    /**
-     * 自定义忽略字段
-     */
-    private final Set<String> ignoreColumns = new HashSet<>();
-
-    /**
      * 启用sql过滤，语法不能支持使用sql过滤表的话，可以考虑关闭此开关.
      */
     private boolean enableSqlFilter = true;
@@ -91,10 +76,57 @@ public class StrategyConfig {
      */
     private boolean enableSchema;
 
+    /////////////////////////////////////////////
+    /////////////////  Entity 策略  //////////////
+    /////////////////////////////////////////////
+
+    /**
+     * 指定生成的主键的ID类型
+     */
+    private IdType idType;
+
+    /**
+     * 实体是否生成 serialVersionUID
+     */
+    private boolean serialVersionUID;
+
+    /**
+     * 【实体】是否为链式模型（默认 false）<br>
+     * -----------------------------------<br>
+     * public User setName(String name) { this.name = name; return this; }
+     */
+    private boolean chain;
+
+    /**
+     * 【实体】是否为lombok模型（默认 false）
+     */
+    private boolean lombok;
+
+    /**
+     * Boolean类型字段是否移除is前缀（默认 false）<br>
+     * 比如 : 数据库字段名称 : 'is_xxx',类型为 : tinyint. 在映射实体的时候则会去掉is,在实体类中映射最终结果为 xxx
+     */
+    private boolean booleanColumnRemoveIsPrefix;
+
+    /**
+     * 是否生成实体时，生成字段注解（默认 false）
+     */
+    private boolean tableFieldAnnotationEnable;
+
     /**
      * 是否启用注释
      */
     private boolean commentSupported = true;
+
+    /**
+     * 自定义忽略字段
+     */
+    private final Set<String> ignoreColumns = new HashSet<>();
+
+    /**
+     * 自定义基础的Entity类，公共字段
+     */
+    private final Set<String> superEntityColumns = new HashSet<>();
 
     /**
      * 名称转换
@@ -112,26 +144,23 @@ public class StrategyConfig {
      */
     private NamingStrategy columnNaming = null;
 
-    /**
-     * Boolean类型字段是否移除is前缀（默认 false）<br>
-     * 比如 : 数据库字段名称 : 'is_xxx',类型为 : tinyint. 在映射实体的时候则会去掉is,在实体类中映射最终结果为 xxx
-     */
-    private boolean booleanColumnRemoveIsPrefix;
+    /////////////////////////////////////////////
+    /////////////////  其他策略  //////////////
+    /////////////////////////////////////////////
 
     /**
-     * 是否生成实体时，生成字段注解（默认 false）
+     * 接口前缀格式
      */
-    private boolean tableFieldAnnotationEnable;
+    private String interfaceFormat = "I{}";
 
-    /**
-     * 实体是否生成 serialVersionUID
-     */
-    private boolean serialVersionUID;
+    /** 页面不需要编辑字段 */
+    public Set<String> columnNameNotEdit = new HashSet<>(Arrays.asList("id", "create_by", "create_time", "del_flag"));
 
-    /**
-     * 转换输出文件名称
-     */
-    private ConverterFileName converterFileName = (entityName -> entityName);
+    /** 页面不需要显示的列表字段 */
+    public Set<String> columnNameNotList = new HashSet<>(Arrays.asList("id", "create_by", "create_time", "del_flag", "update_by", "update_time"));
+
+    /** 页面不需要查询字段 */
+    public Set<String> columnNameNotQuery = new HashSet<>(Arrays.asList("id", "create_by", "create_time", "del_flag", "update_by", "update_time", "remark"));
 
     /**
      * 验证配置项
@@ -147,24 +176,6 @@ public class StrategyConfig {
     public NamingStrategy getColumnNaming() {
         // 未指定以 naming 策略为准
         return Optional.ofNullable(columnNaming).orElse(naming);
-    }
-
-    /**
-     * 大写命名、字段符合大写字母数字下划线命名
-     *
-     * @param word 待判断字符串
-     */
-    public boolean isCapitalModeNaming(String word) {
-        return capitalMode && StringUtils.isCapitalMode(word);
-    }
-
-    /**
-     * 表名称匹配过滤表前缀
-     *
-     * @param tableName 表名称
-     */
-    public boolean startsWithTablePrefix(String tableName) {
-        return this.tablePrefix.stream().anyMatch(tableName::startsWith);
     }
 
     /**
@@ -230,6 +241,19 @@ public class StrategyConfig {
         return ignoreColumns.stream().anyMatch(e -> e.equalsIgnoreCase(fieldName));
     }
 
+    public Map<String, Object> renderData() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("idType", idType == null ? null : idType.toString());
+        data.put("entitySerialVersionUID", this.serialVersionUID);
+        data.put("entityBuilderModel", this.chain);
+        data.put("chainModel", this.chain);
+        data.put("entityLombokModel", this.lombok);
+        data.put("entityBooleanColumnRemoveIsPrefix", this.booleanColumnRemoveIsPrefix);
+        data.put("commentSupported", this.commentSupported);
+        data.put("fieldComment", this.tableFieldAnnotationEnable);
+        return data;
+    }
+
     public static class Builder implements IConfigBuilder<StrategyConfig> {
 
         private final StrategyConfig strategyConfig;
@@ -239,10 +263,7 @@ public class StrategyConfig {
             this.strategyConfig.nameConvert = new INameConvert.DefaultNameConvert(strategyConfig);
         }
 
-        public Builder idType(IdType idType) {
-            this.strategyConfig.idType = idType;
-            return this;
-        }
+        ///////////// 全局策略 /////////////
 
         public Builder enableCapitalMode() {
             this.strategyConfig.capitalMode = true;
@@ -251,6 +272,107 @@ public class StrategyConfig {
 
         public Builder enableSkipView() {
             this.strategyConfig.skipView = true;
+            return this;
+        }
+
+        /**
+         * 增加过滤表前缀
+         *
+         * @param tablePrefix 过滤表前缀
+         * @return this
+         */
+        public Builder addTablePrefix(String... tablePrefix) {
+            return addTablePrefix(Arrays.asList(tablePrefix));
+        }
+
+        public Builder addTablePrefix(List<String> tablePrefixList) {
+            this.strategyConfig.tablePrefix.addAll(tablePrefixList);
+            return this;
+        }
+
+        /**
+         * 增加过滤表后缀
+         *
+         * @param tableSuffix 过滤表后缀
+         * @return this
+         */
+        public Builder addTableSuffix(String... tableSuffix) {
+            return addTableSuffix(Arrays.asList(tableSuffix));
+        }
+
+        public Builder addTableSuffix(List<String> tableSuffixList) {
+            this.strategyConfig.tableSuffix.addAll(tableSuffixList);
+            return this;
+        }
+
+        /**
+         * 增加过滤字段前缀
+         *
+         * @param fieldPrefix 过滤字段前缀
+         * @return this
+         */
+        public Builder addFieldPrefix(String... fieldPrefix) {
+            return addFieldPrefix(Arrays.asList(fieldPrefix));
+        }
+
+        public Builder addFieldPrefix(List<String> fieldPrefix) {
+            this.strategyConfig.fieldPrefix.addAll(fieldPrefix);
+            return this;
+        }
+
+        /**
+         * 增加过滤字段后缀
+         *
+         * @param fieldSuffix 过滤字段后缀
+         * @return this
+         */
+        public Builder addFieldSuffix(String... fieldSuffix) {
+            return addFieldSuffix(Arrays.asList(fieldSuffix));
+        }
+
+        public Builder addFieldSuffix(List<String> fieldSuffixList) {
+            this.strategyConfig.fieldSuffix.addAll(fieldSuffixList);
+            return this;
+        }
+
+        /**
+         * 增加包含的表名
+         *
+         * @param include 包含表
+         * @return this
+         */
+        public Builder addInclude(String... include) {
+            this.strategyConfig.include.addAll(Arrays.asList(include));
+            return this;
+        }
+
+        public Builder addInclude(List<String> includes) {
+            this.strategyConfig.include.addAll(includes);
+            return this;
+        }
+
+        public Builder addInclude(String include) {
+            this.strategyConfig.include.addAll(Arrays.asList(include.split(",")));
+            return this;
+        }
+
+        /**
+         * 增加排除表
+         *
+         * @param exclude 排除表
+         * @return this
+         */
+        public Builder addExclude(String... exclude) {
+            return addExclude(Arrays.asList(exclude));
+        }
+
+        public Builder addExclude(List<String> excludeList) {
+            this.strategyConfig.exclude.addAll(excludeList);
+            return this;
+        }
+
+        public Builder addExclude(String include) {
+            this.strategyConfig.exclude.addAll(Arrays.asList(include.split(",")));
             return this;
         }
 
@@ -263,6 +385,8 @@ public class StrategyConfig {
             this.strategyConfig.enableSchema = true;
             return this;
         }
+
+        ///////////// Entity 策略 /////////////
 
         public Builder enableCommentSupported() {
             this.strategyConfig.commentSupported = true;
@@ -285,12 +409,12 @@ public class StrategyConfig {
             return this;
         }
 
-        public Builder enableBooleanColumnRemoveIsPrefix() {
+        public Builder enableRemoveIsPrefix() {
             this.strategyConfig.booleanColumnRemoveIsPrefix = true;
             return this;
         }
 
-        public Builder enableTableFieldAnnotationEnable() {
+        public Builder enableTableFieldAnnotation() {
             this.strategyConfig.tableFieldAnnotationEnable = true;
             return this;
         }
@@ -300,8 +424,110 @@ public class StrategyConfig {
             return this;
         }
 
-        public Builder convertFileName(ConverterFileName converter) {
-            this.strategyConfig.converterFileName = converter;
+        public Builder idType(IdType idType) {
+            this.strategyConfig.idType = idType;
+            return this;
+        }
+
+        public Builder enableChain() {
+            this.strategyConfig.chain = true;
+            return this;
+        }
+
+        public Builder enableLombok() {
+            this.strategyConfig.lombok = true;
+            return this;
+        }
+
+        /**
+         * 添加父类公共字段
+         *
+         * @param superEntityColumns 父类字段(数据库字段列名)
+         * @return this
+         */
+        public Builder addSuperEntityColumns(String... superEntityColumns) {
+            return addSuperEntityColumns(Arrays.asList(superEntityColumns));
+        }
+
+        public Builder addSuperEntityColumns(List<String> superEntityColumnList) {
+            this.strategyConfig.superEntityColumns.addAll(superEntityColumnList);
+            return this;
+        }
+
+        /**
+         * 添加忽略字段
+         *
+         * @param ignoreColumns 需要忽略的字段(数据库字段列名)
+         * @return this
+         */
+        public Builder addIgnoreColumns(String... ignoreColumns) {
+            return addIgnoreColumns(Arrays.asList(ignoreColumns));
+        }
+
+        public Builder addIgnoreColumns(List<String> ignoreColumnList) {
+            this.strategyConfig.ignoreColumns.addAll(ignoreColumnList);
+            return this;
+        }
+
+        public Builder interfaceFormat(String format) {
+            this.strategyConfig.interfaceFormat = format;
+            return this;
+        }
+
+        /**
+         * 增加不可编辑字段
+         * @param params 不可编辑字段
+         */
+        public Builder addColumnNameNotEdit(String... params) {
+            this.strategyConfig.columnNameNotEdit.addAll(Arrays.asList(params));
+            return this;
+        }
+
+        public Builder addColumnNameNotEdit(List<String> params) {
+            this.strategyConfig.columnNameNotEdit.addAll(params);
+            return this;
+        }
+
+        public Builder addColumnNameNotEdit(String params) {
+            this.strategyConfig.columnNameNotEdit.addAll(Arrays.asList(params.split(",")));
+            return this;
+        }
+
+        /**
+         * 增加不需要显示的列表字段
+         * @param params 需要显示的列表字段
+         */
+        public Builder addColumnNameNotList(String... params) {
+            this.strategyConfig.columnNameNotList.addAll(Arrays.asList(params));
+            return this;
+        }
+
+        public Builder addColumnNameNotList(List<String> params) {
+            this.strategyConfig.columnNameNotList.addAll(params);
+            return this;
+        }
+
+        public Builder addColumnNameNotList(String params) {
+            this.strategyConfig.columnNameNotList.addAll(Arrays.asList(params.split(",")));
+            return this;
+        }
+
+        /**
+         * 增加不需要查询的字段
+         * @param params 不需要查询的字段
+         */
+        public Builder addColumnNameNotQuery(String... params) {
+            this.strategyConfig.columnNameNotQuery.addAll(Arrays.asList(params));
+            return this;
+        }
+
+        public Builder addColumnNameNotQuery(List<String> params) {
+            this.strategyConfig.columnNameNotQuery.addAll(params);
+            return this;
+        }
+
+        public Builder addColumnNameNotQuery(String params) {
+            this.strategyConfig.columnNameNotQuery.addAll(Arrays.asList(params.split(",")));
             return this;
         }
 

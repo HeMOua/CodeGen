@@ -14,11 +14,6 @@ public class TemplateInfo {
     private EngineType engineType;
 
     /**
-     * 模板唯一标识
-     */
-    private String identity;
-
-    /**
      * 模板内容
      */
     private String content;
@@ -32,4 +27,9 @@ public class TemplateInfo {
      * 文件名
      */
     private String fileName;
+
+    /**
+     * 只生成一次
+     */
+    private boolean onlyOnce;
 }

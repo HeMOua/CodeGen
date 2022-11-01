@@ -1,9 +1,6 @@
 package com.hemou.generator.config.builder;
 
-import com.hemou.generator.config.DataSourceConfig;
-import com.hemou.generator.config.GlobalConfig;
-import com.hemou.generator.config.StrategyConfig;
-import com.hemou.generator.config.TemplateConfig;
+import com.hemou.generator.config.*;
 import com.hemou.generator.config.po.TableInfo;
 import com.hemou.generator.config.querys.IDatabaseQuery;
 import lombok.Data;

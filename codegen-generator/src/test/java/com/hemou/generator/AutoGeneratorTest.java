@@ -6,6 +6,7 @@ import com.hemou.generator.config.TemplateConfig;
 import com.hemou.generator.config.po.ResultInfo;
 import com.hemou.generator.config.po.TemplateInfo;
 import com.hemou.generator.config.rules.EngineType;
+import com.hemou.generator.config.rules.IdType;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class AutoGeneratorTest {
         generator.setGlobalConfig(globalConfig);
 
         DataSourceConfig dataSourceConfig = new DataSourceConfig.Builder(
-                "jdbc:mysql://localhost:3306/music?characterEncoding=UTF-8&useUnicode=true&useInformationSchema=true",
+                "jdbc:mysql://localhost:3306/music?useInformationSchema=true",
                 "root", "root").build();
         generator.setDataSource(dataSourceConfig);
 
@@ -35,36 +36,34 @@ public class AutoGeneratorTest {
 
         // template_1
         TemplateInfo templateInfo = new TemplateInfo();
-        templateInfo.setFileName("${_author}.java");
+        templateInfo.setFileName("${author}.java");
         templateInfo.setEngineType(EngineType.Beetl);
-        templateInfo.setIdentity("1");
-        String templateStr = "{}${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
+        String templateStr = "{}${author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
-        templateStr += "\n[(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n";
+        templateStr += "\n[(${author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n";
         templateInfo.setContent(templateStr);
         templateInfo.setFilePath("src");
+        templateInfo.setOnlyOnce(true);
         templateInfos.add(templateInfo);
 
         // template_2
         TemplateInfo templateInfo2 = new TemplateInfo();
-        templateInfo2.setFileName("${_author}.java");
+        templateInfo2.setFileName("${author}.java");
         templateInfo2.setEngineType(EngineType.Thymeleaf);
-        templateInfo2.setIdentity("2");
-        templateStr = "${_author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
+        templateStr = "${author}\n${_project.desc} ${_project.enName} ${_project.zhName}\n" +
                 "当前时间：${_time.yyyy}/${_time.MM}/${_time.dd} ${_time.HH}:${_time.mm}:${_time.ss}.${_time.sss}";
-        templateStr += "\n[(${_time.yyyy})][(${_author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n" +
+        templateStr += "\n[(${_time.yyyy})][(${author})]\n[(${_project.desc})] [(${_project.enName})] [(${_project.zhName})]\n" +
                 "[(${comment})]";
         templateInfo2.setContent(templateStr);
-        templateInfo2.setFilePath("src\\[(${_author})].java");
+        templateInfo2.setFilePath("src\\[(${author})].java");
         templateInfos.add(templateInfo2);
 
         TemplateInfo templateInfo3 = new TemplateInfo();
-        templateInfo3.setFileName("${_author}.java");
+        templateInfo3.setFileName("${author}.java");
         templateInfo3.setEngineType(EngineType.Thymeleaf);
-        templateInfo3.setIdentity("2");
-        templateStr = "老表不爱我，${_author}";
+        templateStr = "老表不爱我，${author}";
         templateInfo3.setContent(templateStr);
-        templateInfo3.setFilePath("src\\[(${_author})].java");
+        templateInfo3.setFilePath("src\\[(${author})].java");
         templateInfos.add(templateInfo3);
 
         generator.setTemplateConfig(
@@ -76,5 +75,16 @@ public class AutoGeneratorTest {
 
         List<ResultInfo> result = generator.execute();
         System.out.println(result);
+    }
+
+    @Test
+    public void testIdType() {
+        System.out.println(IdType.AUTO.toString());
+    }
+
+    @Test
+    public void testBasePackage() {
+        GlobalConfig globalConfig = new GlobalConfig.Builder().basePackage("com.hemou").build();
+        System.out.println(globalConfig.getBasePath());
     }
 }

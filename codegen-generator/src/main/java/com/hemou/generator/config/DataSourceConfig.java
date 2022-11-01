@@ -27,26 +27,22 @@ public class DataSourceConfig {
      * 数据库信息查询
      */
     private IDbQuery dbQuery;
-    /**
-     * 数据库类型
-     */
-    private DbType dbType;
+
     /**
      * schemaName
      */
     private String schemaName;
+
     /**
      * 类型转换
      */
     private ITypeConvert typeConvert;
+
     /**
      * 驱动连接的URL
      */
     private String url;
-    /**
-     * 驱动名称
-     */
-    private String driverName;
+
     /**
      * 数据库连接用户名
      */

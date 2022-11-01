@@ -23,7 +23,7 @@ import java.util.Map;
 @Accessors(chain = true)
 public class AutoGenerator {
 
-    private static final Logger logger = LoggerFactory.getLogger(StandardGenerator.class);
+    private static final Logger logger = LoggerFactory.getLogger(AutoGenerator.class);
 
     /**
      * 配置信息
@@ -41,7 +41,7 @@ public class AutoGenerator {
     private DataSourceConfig dataSource;
 
     /**
-     * 数据库表配置
+     * 策略配置
      */
     private StrategyConfig strategy;
 
@@ -80,15 +80,21 @@ public class AutoGenerator {
             Map<String, Object> commonMap = GenUtils.getCommonObjectMap(config);
             for (TemplateInfo template : templateList) {
                 AbstractTemplateEngine engine = getEngine(template);
-                Map<String, Object> objectMap = new HashMap<>(commonMap);
-                if (infoList != null && infoList.size() > 0) { // 数据源数据不为空
-                    for (TableInfo tableInfo : infoList) {
-                        templateConfig.beforeRender(tableInfo, objectMap);
+                if (template.isOnlyOnce()) {
+                    templateConfig.beforeRender(null, commonMap);
+                    resultList.add(engine.writer(commonMap, template));
+                } else {
+                    Map<String, Object> objectMap = new HashMap<>(commonMap);
+                    if (infoList != null && infoList.size() > 0) { // 数据源数据不为空
+                        for (TableInfo tableInfo : infoList) {
+                            objectMap.putAll(GenUtils.getTableInfo(config, tableInfo));
+                            templateConfig.beforeRender(tableInfo, objectMap);
+                            resultList.add(engine.writer(objectMap, template));
+                        }
+                    } else { // 若数据源数据为空
+                        templateConfig.beforeRender(null, objectMap);
                         resultList.add(engine.writer(objectMap, template));
                     }
-                } else { // 若数据源数据为空
-                    templateConfig.beforeRender(null, objectMap);
-                    resultList.add(engine.writer(objectMap, template));
                 }
             }
         } catch (Exception e) {

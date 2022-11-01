@@ -1,8 +1,8 @@
 package com.hemou.generator.engine;
 
+import com.hemou.generator.config.builder.ConfigBuilder;
 import com.hemou.generator.config.po.ResultInfo;
 import com.hemou.generator.config.po.TemplateInfo;
-import com.hemou.generator.config.builder.ConfigBuilder;
 import freemarker.cache.StringTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -10,7 +10,6 @@ import freemarker.template.TemplateExceptionHandler;
 
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
@@ -29,11 +28,6 @@ public class FreemarkerTemplateEngine extends AbstractTemplateEngine {
         // 全局模板加载器
         templateLoader = new StringTemplateLoader();
         configuration.setTemplateLoader(templateLoader);
-        // 加载字符串模板
-        List<TemplateInfo> templateList = configBuilder.getTemplateConfig().getTemplateList();
-        for (TemplateInfo tc : templateList) {
-            templateLoader.putTemplate(tc.getIdentity(), tc.getContent());
-        }
         return this;
     }
 

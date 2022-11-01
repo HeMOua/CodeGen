@@ -3,9 +3,16 @@ package com.hemou.generator.config;
 import com.hemou.generator.config.rules.DateType;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+
 public class GlobalConfig {
 
     private GlobalConfig(){}
+
+    /**
+     * 基础包路径
+     */
+    private String basePackage = "com.hemou";
 
     /**
      * 开发人员
@@ -52,6 +59,14 @@ public class GlobalConfig {
      */
     private DateType dateType = DateType.ONLY_DATE;
 
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public String getBasePath() {
+        return this.basePackage.replace(".", File.separator);
+    }
+
     public String getAuthor() {
         return author;
     }
@@ -94,6 +109,11 @@ public class GlobalConfig {
 
         public Builder() {
             this.globalConfig = new GlobalConfig();
+        }
+
+        public Builder basePackage(String basePackage) {
+            this.globalConfig.basePackage = basePackage;
+            return this;
         }
 
         public Builder author(String author) {

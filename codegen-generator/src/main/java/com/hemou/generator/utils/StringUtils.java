@@ -1,5 +1,7 @@
 package com.hemou.generator.utils;
 
+import cn.hutool.core.util.StrUtil;
+
 import java.util.regex.Pattern;
 
 public final class StringUtils extends org.apache.commons.lang3.StringUtils {
@@ -82,5 +84,12 @@ public final class StringUtils extends org.apache.commons.lang3.StringUtils {
      */
     public static String removePrefixAfterPrefixToLower(String rawString, int index) {
         return prefixToLower(rawString.substring(index), 1);
+    }
+
+    /**
+     * 格式化字符串
+     */
+    public static String format(String format, Object... params) {
+        return StrUtil.format(format, params);
     }
 }

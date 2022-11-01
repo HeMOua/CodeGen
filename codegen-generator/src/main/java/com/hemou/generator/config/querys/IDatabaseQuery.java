@@ -9,6 +9,7 @@ import com.hemou.generator.config.po.TableInfo;
 import com.hemou.generator.config.rules.DbType;
 import com.hemou.generator.config.rules.IColumnType;
 import com.hemou.generator.jdbc.DatabaseMetaDataWrapper;
+import com.hemou.generator.utils.GenUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +90,7 @@ public abstract class IDatabaseQuery {
                     }
                 });
                 if (isExclude || isInclude) {
+                    // 查找用户指定的 include 或 exclude 是否不存在于 tableList
                     Map<String, String> notExistTables = new HashSet<>(isExclude ? strategyConfig.getExclude() : strategyConfig.getInclude())
                             .stream()
                             .filter(s -> !ConfigBuilder.matcherRegTable(s))
@@ -163,6 +165,7 @@ public abstract class IDatabaseQuery {
                     IColumnType columnType = dataSourceConfig.getTypeConvert().processTypeConvert(globalConfig, field);
                     field.setPropertyName(propertyName, columnType);
                     field.setMetaInfo(new TableField.MetaInfo(columnsMetaInfoMap.get(columnName.toLowerCase())));
+                    GenUtils.initColumnField(strategyConfig, field);
                     tableInfo.addField(field);
                 });
             } catch (SQLException e) {
