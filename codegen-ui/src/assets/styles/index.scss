@@ -1,0 +1,66 @@
+@import './special.scss';
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  height: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+  background-color: #fafafa;
+}
+
+label {
+  font-weight: 700;
+}
+
+html {
+  height: 100%;
+}
+
+#app {
+  height: 100%;
+}
+
+a:focus,
+a:active {
+  outline: none;
+}
+
+a,
+a:focus,
+a:hover {
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+div:focus {
+  outline: none;
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.clear {
+  &:after {
+    visibility: hidden;
+    display: block;
+    content: ' ';
+    clear: both;
+  }
+}
+
+// main-container global css
+.app-container {
+  padding: 20px;
+}

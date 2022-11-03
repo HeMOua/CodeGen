@@ -5,6 +5,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>codegen-generator</module>
+        <module>codegen-server</module>
     </modules>
     <groupId>com.hemou</groupId>
     <artifactId>CodeGen</artifactId>
@@ -15,21 +16,35 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <hutools.version>5.8.0.M3</hutools.version>
+        <spring-boot.version>2.7.5</spring-boot.version>
+        <mybatis-spring-boot.version>2.2.2</mybatis-spring-boot.version>
+        <pagehelper.boot.version>1.4.1</pagehelper.boot.version>
+        <commons.io.version>2.11.0</commons.io.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
+        <hutools.version>5.8.9</hutools.version>
         <codegen.version>0.0.1</codegen.version>
         <lombok.version>1.18.24</lombok.version>
-        <logback.version>1.2.11</logback.version>
+        <logback.version>1.4.4</logback.version>
         <junit.version>4.13.2</junit.version>
         <mysql.version>8.0.29</mysql.version>
         <freemarker.version>2.3.31</freemarker.version>
         <velocity.version>2.3</velocity.version>
-        <beetl.version>3.10.0.RELEASE</beetl.version>
+        <beetl.version>3.13.0.RELEASE</beetl.version>
         <thymeleaf.version>3.0.15.RELEASE</thymeleaf.version>
     </properties>
 
     <dependencyManagement>
 
         <dependencies>
+            <!-- SpringBoot的依赖配置-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
             <!-- 代码生成模块 -->
             <dependency>
                 <groupId>com.hemou</groupId>
@@ -37,10 +52,11 @@
                 <version>${codegen.version}</version>
             </dependency>
 
+            <!-- 代码生成服务模块 -->
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
-                <version>${mysql.version}</version>
+                <groupId>com.hemou</groupId>
+                <artifactId>codegen-server</artifactId>
+                <version>${codegen.version}</version>
             </dependency>
 
             <!-- hutools -->
@@ -74,34 +90,36 @@
                 <artifactId>thymeleaf</artifactId>
                 <version>${thymeleaf.version}</version>
             </dependency>
+
+            <!-- SpringBoot集成mybatis框架 -->
+            <dependency>
+                <groupId>org.mybatis.spring.boot</groupId>
+                <artifactId>mybatis-spring-boot-starter</artifactId>
+                <version>${mybatis-spring-boot.version}</version>
+            </dependency>
+
+            <!-- pagehelper 分页插件 -->
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper-spring-boot-starter</artifactId>
+                <version>${pagehelper.boot.version}</version>
+            </dependency>
+
+            <!-- io常用工具类 -->
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+
+            <!-- 文件上传工具类 -->
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+            </dependency>
         </dependencies>
 
     </dependencyManagement>
-
-    <dependencies>
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-
-        <!-- 单元测试 -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- slf4j -->
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
-        </dependency>
-
-
-    </dependencies>
 
 </project>
