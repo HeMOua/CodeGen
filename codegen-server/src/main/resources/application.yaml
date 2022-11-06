@@ -1,0 +1,18 @@
+mybatis:
+  type-aliases-package: com.hemou.server.domain
+  mapper-locations: mapper/**.xml
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/codegen?characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+    username: root
+    password: root
+  main:
+    banner-mode: off
+  servlet:
+    multipart:
+      max-file-size: 10MB
+server:
+  servlet:
+    context-path: /
+  port: 8080

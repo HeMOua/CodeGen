@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hemou.server.mapper.GroupLabelMapper">
+
+    <resultMap type="GroupLabel" id="GroupLabelResult">
+        <result property="labelId"  column="label_id" />
+        <result property="labelName"  column="label_name" />
+    </resultMap>
+
+    <sql id="selectVo">
+        select label_id, label_name from t_group_label
+    </sql>
+
+    <select id="selectList" parameterType="GroupLabel" resultMap="GroupLabelResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="labelName != null and labelName.trim() != ''"> and label_name like concat('%', #{labelName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectByLabelId" parameterType="Long" resultMap="GroupLabelResult">
+        <include refid="selectVo"/>
+        where label_id = #{labelId}
+    </select>
+
+    <insert id="insert" parameterType="GroupLabel" useGeneratedKeys="true" keyProperty="labelId">
+        insert into t_group_label
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="labelName != null and labelName != ''">label_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="labelName != null and labelName != ''">#{labelName},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="GroupLabel">
+        update t_group_label
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="labelName != null and labelName != ''">label_name = #{labelName},</if>
+        </trim>
+        where label_id = #{labelId}
+    </update>
+
+    <delete id="removeByLabelId" parameterType="Long">
+        delete from t_group_label where label_id = #{labelId}
+    </delete>
+
+    <delete id="removeByLabelIds" parameterType="String">
+        delete from t_group_label where label_id in
+        <foreach item="labelId" collection="array" open="(" separator="," close=")">
+            #{labelId}
+        </foreach>
+    </delete>
+
+</mapper>

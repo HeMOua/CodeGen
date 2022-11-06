@@ -1,10 +1,13 @@
 package com.hemou.server.domain;
 
+import lombok.Data;
+
+@Data
 public class GroupLabel {
 
-    /** 模板组 ID */
-    private Long groupId;
+    /** 标签 ID */
+    private Long labelId;
 
-    /** 模板 ID */
-    private Long fileId;
+    /** 标签名 */
+    private String labelName;
 }

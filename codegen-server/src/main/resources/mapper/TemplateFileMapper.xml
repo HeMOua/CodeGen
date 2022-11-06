@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hemou.server.mapper.TemplateFileMapper">
+
+    <resultMap type="TemplateFile" id="TemplateFileResult">
+        <result property="tplId"  column="tpl_id" />
+        <result property="tplName"  column="tpl_name" />
+        <result property="tplPath"  column="tpl_path" />
+        <result property="content"  column="content" />
+        <result property="engineType"  column="engine_type" />
+        <result property="onlyOnce"  column="only_once" />
+        <result property="useForAll"  column="use_for_all" />
+    </resultMap>
+
+    <sql id="selectVo">
+        select tpl_id, tpl_name, tpl_path, content, engine_type, only_once, use_for_all from t_template_file
+    </sql>
+
+    <select id="selectList" parameterType="TemplateFile" resultMap="TemplateFileResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="tplName != null and tplName.trim() != ''"> and tpl_name like concat('%', #{tplName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectByTplId" parameterType="Long" resultMap="TemplateFileResult">
+        <include refid="selectVo"/>
+        where tpl_id = #{tplId}
+    </select>
+
+    <insert id="insert" parameterType="TemplateFile" useGeneratedKeys="true" keyProperty="tplId">
+        insert into t_template_file
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tplName != null and tplName != ''">tpl_name,</if>
+            <if test="tplPath != null and tplPath != ''">tpl_path,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="engineType != null and engineType != ''">engine_type,</if>
+            <if test="onlyOnce != null">only_once,</if>
+            <if test="useForAll != null">use_for_all,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tplName != null and tplName != ''">#{tplName},</if>
+            <if test="tplPath != null and tplPath != ''">#{tplPath},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="engineType != null and engineType != ''">#{engineType},</if>
+            <if test="onlyOnce != null">#{onlyOnce},</if>
+            <if test="useForAll != null">#{useForAll},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="TemplateFile">
+        update t_template_file
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tplName != null and tplName != ''">tpl_name = #{tplName},</if>
+            <if test="tplPath != null and tplPath != ''">tpl_path = #{tplPath},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="engineType != null and engineType != ''">engine_type = #{engineType},</if>
+            <if test="onlyOnce != null">only_once = #{onlyOnce},</if>
+            <if test="useForAll != null">use_for_all = #{useForAll},</if>
+        </trim>
+        where tpl_id = #{tplId}
+    </update>
+
+    <delete id="removeByTplId" parameterType="Long">
+        delete from t_template_file where tpl_id = #{tplId}
+    </delete>
+
+    <delete id="removeByTplIds" parameterType="String">
+        delete from t_template_file where tpl_id in
+        <foreach item="tplId" collection="array" open="(" separator="," close=")">
+            #{tplId}
+        </foreach>
+    </delete>
+
+</mapper>
