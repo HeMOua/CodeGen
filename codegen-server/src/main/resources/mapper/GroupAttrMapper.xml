@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hemou.server.mapper.GroupAttrMapper">
+
+    <resultMap type="GroupAttr" id="GroupAttrResult">
+        <result property="attrId"  column="attr_id" />
+        <result property="attrName"  column="attr_name" />
+        <result property="attrVar"  column="attr_var" />
+        <result property="attrType"  column="attr_type" />
+        <result property="defaultValue"  column="default_value" />
+        <result property="introduce"  column="introduce" />
+        <result property="notNull"  column="not_null" />
+        <result property="configKey"  column="config_key" />
+    </resultMap>
+
+    <sql id="selectVo">
+        select attr_id, attr_name, attr_var, attr_type, default_value, introduce, not_null, config_key from t_group_attr
+    </sql>
+
+    <select id="selectList" parameterType="GroupAttr" resultMap="GroupAttrResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="attrName != null and attrName.trim() != ''"> and attr_name like concat('%', #{attrName}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectByAttrId" parameterType="Long" resultMap="GroupAttrResult">
+        <include refid="selectVo"/>
+        where attr_id = #{attrId}
+    </select>
+
+    <insert id="insert" parameterType="GroupAttr" useGeneratedKeys="true" keyProperty="attrId">
+        insert into t_group_attr
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="attrName != null and attrName != ''">attr_name,</if>
+            <if test="attrVar != null and attrVar != ''">attr_var,</if>
+            <if test="attrType != null and attrType != ''">attr_type,</if>
+            <if test="defaultValue != null and defaultValue != ''">default_value,</if>
+            <if test="introduce != null and introduce != ''">introduce,</if>
+            <if test="notNull != null">not_null,</if>
+            <if test="configKey != null">config_key,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="attrName != null and attrName != ''">#{attrName},</if>
+            <if test="attrVar != null and attrVar != ''">#{attrVar},</if>
+            <if test="attrType != null and attrType != ''">#{attrType},</if>
+            <if test="defaultValue != null and defaultValue != ''">#{defaultValue},</if>
+            <if test="introduce != null and introduce != ''">#{introduce},</if>
+            <if test="notNull != null">#{notNull},</if>
+            <if test="configKey != null">#{configKey},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="GroupAttr">
+        update t_group_attr
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="attrName != null and attrName != ''">attr_name = #{attrName},</if>
+            <if test="attrVar != null and attrVar != ''">attr_var = #{attrVar},</if>
+            <if test="attrType != null and attrType != ''">attr_type = #{attrType},</if>
+            <if test="defaultValue != null and defaultValue != ''">default_value = #{defaultValue},</if>
+            <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
+            <if test="notNull != null">not_null = #{notNull},</if>
+            <if test="configKey != null">config_key = #{configKey},</if>
+        </trim>
+        where attr_id = #{attrId}
+    </update>
+
+    <delete id="removeByAttrId" parameterType="Long">
+        delete from t_group_attr where attr_id = #{attrId}
+    </delete>
+
+    <delete id="removeByAttrIds" parameterType="String">
+        delete from t_group_attr where attr_id in
+        <foreach item="attrId" collection="array" open="(" separator="," close=")">
+            #{attrId}
+        </foreach>
+    </delete>
+
+</mapper>

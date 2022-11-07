@@ -11,6 +11,9 @@ public class TemplateGroup {
     /** 模板组名 */
     private String groupName;
 
+    /** 介绍 */
+    private String introduce;
+
     /** 父模板组 ID */
     private Long parentId;
 

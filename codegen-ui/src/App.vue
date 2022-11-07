@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="header">
-      <Breadcrumb class="breadcrumb-container" />
-      <router-link class="item" to="/templateConfig">模板配置</router-link>
+      <router-link class="item" :class="{active: isActive}" to="/templateConfig">模板配置</router-link>
       <router-link class="item" to="/generatorConfig">代码生成</router-link>
     </div>
     <div class="app-container">
+      <Breadcrumb class="breadcrumb-container" />
       <router-view />
     </div>
   </div>
@@ -16,6 +16,11 @@ export default {
   components: { Breadcrumb },
   data() {
     return {}
+  },
+  computed: {
+    isActive() {
+      return this.$route.path === '/buildTemplate'
+    }
   }
 }
 </script>
@@ -24,15 +29,10 @@ export default {
   position: relative;
   display: flex;
   justify-content: center;
-  .breadcrumb-container {
-    position: absolute;
-    top: 30%;
-    left: 50px;
-  }
   & .item {
     font-size: 28px;
-    padding: 20px;
-    &.router-link-active::after {
+    padding: 20px 20px 0;
+    &.router-link-active::after, &.active::after {
       content: '';
       margin-top: 6px;
       display: block;

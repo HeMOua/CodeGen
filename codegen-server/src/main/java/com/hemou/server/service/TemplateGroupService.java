@@ -24,26 +24,26 @@ public interface TemplateGroupService {
     /**
      * 查询模板组列表
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 模板组集合
      */
-    public List<TemplateGroup> selectList(TemplateGroup emplateGroup);
+    public List<TemplateGroup> selectList(TemplateGroup templateGroup);
 
     /**
      * 新增模板组
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 结果
      */
-    public int insert(TemplateGroup emplateGroup);
+    public int insert(TemplateGroup templateGroup);
 
     /**
      * 修改模板组
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 结果
      */
-    public int update(TemplateGroup emplateGroup);
+    public int update(TemplateGroup templateGroup);
 
     /**
      * 删除模板组

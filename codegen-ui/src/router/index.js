@@ -13,17 +13,20 @@ const routes = [
   {
     path: '/generatorConfig',
     name: 'generatorConfig',
-    component: GeneratorConfig
+    component: GeneratorConfig,
+    meta: { title: '代码生成' }
   },
   {
     path: '/templateConfig',
     name: 'templateConfig',
-    component: TemplateConfig
+    component: TemplateConfig,
+    meta: { title: '模板配置' }
   },
   {
     path: '/buildTemplate',
     name: 'buildTemplate',
-    component: () => import(/* webpackChunkName: "buildTemplate" */ '@/views/BuildTemplate.vue')
+    component: () => import(/* webpackChunkName: "buildTemplate" */ '@/views/BuildTemplate'),
+    meta: { title: '模板构建' }
   }
 ]
 

@@ -18,7 +18,7 @@ import java.util.List;
 public class TemplateGroupServiceImpl implements TemplateGroupService {
 
     @Autowired
-    private TemplateGroupMapper emplateGroupMapper;
+    private TemplateGroupMapper templateGroupMapper;
 
     /**
      * 查询模板组
@@ -28,40 +28,40 @@ public class TemplateGroupServiceImpl implements TemplateGroupService {
      */
     @Override
     public TemplateGroup selectByGroupId(Long groupId) {
-        return emplateGroupMapper.selectByGroupId(groupId);
+        return templateGroupMapper.selectByGroupId(groupId);
     }
 
     /**
      * 查询模板组列表
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 模板组
      */
     @Override
-    public List<TemplateGroup> selectList(TemplateGroup emplateGroup) {
-        return emplateGroupMapper.selectList(emplateGroup);
+    public List<TemplateGroup> selectList(TemplateGroup templateGroup) {
+        return templateGroupMapper.selectList(templateGroup);
     }
 
     /**
      * 新增模板组
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 结果
      */
     @Override
-    public int insert(TemplateGroup emplateGroup) {
-        return emplateGroupMapper.insert(emplateGroup);
+    public int insert(TemplateGroup templateGroup) {
+        return templateGroupMapper.insert(templateGroup);
     }
 
     /**
      * 修改模板组
      *
-     * @param emplateGroup 模板组
+     * @param templateGroup 模板组
      * @return 结果
      */
     @Override
-    public int update(TemplateGroup emplateGroup) {
-        return emplateGroupMapper.update(emplateGroup);
+    public int update(TemplateGroup templateGroup) {
+        return templateGroupMapper.update(templateGroup);
     }
 
     /**
@@ -72,7 +72,7 @@ public class TemplateGroupServiceImpl implements TemplateGroupService {
      */
     @Override
     public int removeByGroupId(Long groupId) {
-        return emplateGroupMapper.removeByGroupId(groupId);
+        return templateGroupMapper.removeByGroupId(groupId);
     }
 
     /**
@@ -83,7 +83,7 @@ public class TemplateGroupServiceImpl implements TemplateGroupService {
      */
     @Override
     public int removeByGroupIds(Long[] groupIds) {
-        return emplateGroupMapper.removeByGroupIds(groupIds);
+        return templateGroupMapper.removeByGroupIds(groupIds);
     }
 }
 
