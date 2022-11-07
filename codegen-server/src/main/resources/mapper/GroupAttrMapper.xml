@@ -13,10 +13,11 @@
         <result property="introduce"  column="introduce" />
         <result property="notNull"  column="not_null" />
         <result property="configKey"  column="config_key" />
+        <result property="groupId"  column="group_id" />
     </resultMap>
 
     <sql id="selectVo">
-        select attr_id, attr_name, attr_var, attr_type, default_value, introduce, not_null, config_key from t_group_attr
+        select attr_id, attr_name, attr_var, attr_type, default_value, introduce, not_null, config_key, group_id from t_group_attr
     </sql>
 
     <select id="selectList" parameterType="GroupAttr" resultMap="GroupAttrResult">
@@ -41,6 +42,7 @@
             <if test="introduce != null and introduce != ''">introduce,</if>
             <if test="notNull != null">not_null,</if>
             <if test="configKey != null">config_key,</if>
+            <if test="groupId != null">group_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="attrName != null and attrName != ''">#{attrName},</if>
@@ -50,6 +52,7 @@
             <if test="introduce != null and introduce != ''">#{introduce},</if>
             <if test="notNull != null">#{notNull},</if>
             <if test="configKey != null">#{configKey},</if>
+            <if test="groupId != null">#{groupId},</if>
         </trim>
     </insert>
 
@@ -63,6 +66,7 @@
             <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
             <if test="notNull != null">not_null = #{notNull},</if>
             <if test="configKey != null">config_key = #{configKey},</if>
+            <if test="groupId != null">group_id = #{groupId},</if>
         </trim>
         where attr_id = #{attrId}
     </update>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hemou.server.mapper.AttrItemMapper">
+
+    <resultMap type="AttrItem" id="AttrItemResult">
+        <result property="itemId"  column="item_id" />
+        <result property="name"  column="name" />
+        <result property="value"  column="value" />
+        <result property="introduce"  column="introduce" />
+        <result property="attrId"  column="attr_id" />
+    </resultMap>
+
+    <sql id="selectVo">
+        select item_id, name, value, introduce, attr_id from t_attr_item
+    </sql>
+
+    <select id="selectList" parameterType="AttrItem" resultMap="AttrItemResult">
+        <include refid="selectVo"/>
+        <where>
+            <if test="name != null and name.trim() != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectByItemId" parameterType="Long" resultMap="AttrItemResult">
+        <include refid="selectVo"/>
+        where item_id = #{itemId}
+    </select>
+
+    <insert id="insert" parameterType="AttrItem" useGeneratedKeys="true" keyProperty="itemId">
+        insert into t_attr_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="value != null and value != ''">value,</if>
+            <if test="introduce != null and introduce != ''">introduce,</if>
+            <if test="attrId != null">attr_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="value != null and value != ''">#{value},</if>
+            <if test="introduce != null and introduce != ''">#{introduce},</if>
+            <if test="attrId != null">#{attrId},</if>
+        </trim>
+    </insert>
+
+    <update id="update" parameterType="AttrItem">
+        update t_attr_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="value != null and value != ''">value = #{value},</if>
+            <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
+            <if test="attrId != null">attr_id = #{attrId},</if>
+        </trim>
+        where item_id = #{itemId}
+    </update>
+
+    <delete id="removeByItemId" parameterType="Long">
+        delete from t_attr_item where item_id = #{itemId}
+    </delete>
+
+    <delete id="removeByItemIds" parameterType="String">
+        delete from t_attr_item where item_id in
+        <foreach item="itemId" collection="array" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+</mapper>
