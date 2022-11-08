@@ -8,12 +8,12 @@
         <result property="itemId"  column="item_id" />
         <result property="name"  column="name" />
         <result property="value"  column="value" />
-        <result property="introduce"  column="introduce" />
+        <result property="description"  column="description"/>
         <result property="attrId"  column="attr_id" />
     </resultMap>
 
     <sql id="selectVo">
-        select item_id, name, value, introduce, attr_id from t_attr_item
+        select item_id, name, value, description, attr_id from t_attr_item
     </sql>
 
     <select id="selectList" parameterType="AttrItem" resultMap="AttrItemResult">
@@ -33,13 +33,13 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">name,</if>
             <if test="value != null and value != ''">value,</if>
-            <if test="introduce != null and introduce != ''">introduce,</if>
+            <if test="description != null and description != ''">description,</if>
             <if test="attrId != null">attr_id,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
             <if test="value != null and value != ''">#{value},</if>
-            <if test="introduce != null and introduce != ''">#{introduce},</if>
+            <if test="description != null and description != ''">#{description},</if>
             <if test="attrId != null">#{attrId},</if>
         </trim>
     </insert>
@@ -49,7 +49,7 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="value != null and value != ''">value = #{value},</if>
-            <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
             <if test="attrId != null">attr_id = #{attrId},</if>
         </trim>
         where item_id = #{itemId}

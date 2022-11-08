@@ -10,14 +10,14 @@
         <result property="attrVar"  column="attr_var" />
         <result property="attrType"  column="attr_type" />
         <result property="defaultValue"  column="default_value" />
-        <result property="introduce"  column="introduce" />
+        <result property="description"  column="description" />
         <result property="notNull"  column="not_null" />
         <result property="configKey"  column="config_key" />
         <result property="groupId"  column="group_id" />
     </resultMap>
 
     <sql id="selectVo">
-        select attr_id, attr_name, attr_var, attr_type, default_value, introduce, not_null, config_key, group_id from t_group_attr
+        select attr_id, attr_name, attr_var, attr_type, default_value, description, not_null, config_key, group_id from t_group_attr
     </sql>
 
     <select id="selectList" parameterType="GroupAttr" resultMap="GroupAttrResult">
@@ -39,7 +39,7 @@
             <if test="attrVar != null and attrVar != ''">attr_var,</if>
             <if test="attrType != null and attrType != ''">attr_type,</if>
             <if test="defaultValue != null and defaultValue != ''">default_value,</if>
-            <if test="introduce != null and introduce != ''">introduce,</if>
+            <if test="description != null and description != ''">description,</if>
             <if test="notNull != null">not_null,</if>
             <if test="configKey != null">config_key,</if>
             <if test="groupId != null">group_id,</if>
@@ -49,7 +49,7 @@
             <if test="attrVar != null and attrVar != ''">#{attrVar},</if>
             <if test="attrType != null and attrType != ''">#{attrType},</if>
             <if test="defaultValue != null and defaultValue != ''">#{defaultValue},</if>
-            <if test="introduce != null and introduce != ''">#{introduce},</if>
+            <if test="description != null and description != ''">#{description},</if>
             <if test="notNull != null">#{notNull},</if>
             <if test="configKey != null">#{configKey},</if>
             <if test="groupId != null">#{groupId},</if>
@@ -63,7 +63,7 @@
             <if test="attrVar != null and attrVar != ''">attr_var = #{attrVar},</if>
             <if test="attrType != null and attrType != ''">attr_type = #{attrType},</if>
             <if test="defaultValue != null and defaultValue != ''">default_value = #{defaultValue},</if>
-            <if test="introduce != null and introduce != ''">introduce = #{introduce},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
             <if test="notNull != null">not_null = #{notNull},</if>
             <if test="configKey != null">config_key = #{configKey},</if>
             <if test="groupId != null">group_id = #{groupId},</if>

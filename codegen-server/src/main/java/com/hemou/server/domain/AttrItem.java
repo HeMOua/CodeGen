@@ -24,7 +24,7 @@ public class AttrItem {
     private String value;
 
     /** 说明 */
-    private String introduce;
+    private String description;
 
     /** 模板组属性 ID */
     private Long attrId;

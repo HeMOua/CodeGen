@@ -12,7 +12,7 @@ public class TemplateGroup {
     private String groupName;
 
     /** 介绍 */
-    private String introduce;
+    private String description;
 
     /** 父模板组 ID */
     private Long parentId;

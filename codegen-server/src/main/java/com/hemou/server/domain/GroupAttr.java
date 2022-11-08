@@ -30,7 +30,7 @@ public class GroupAttr {
     private String defaultValue;
 
     /** 属性说明 */
-    private String introduce;
+    private String description;
 
     /** 必填 */
     private Boolean notNull;

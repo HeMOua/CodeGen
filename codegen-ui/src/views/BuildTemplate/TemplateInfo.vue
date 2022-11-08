@@ -9,8 +9,8 @@
           <el-form-item label="模板名称" prop="groupName">
             <el-input v-model="form.groupName" />
           </el-form-item>
-          <el-form-item label="介绍" prop="introduce">
-            <el-input v-model="form.introduce" type="textarea" />
+          <el-form-item label="介绍" prop="description">
+            <el-input v-model="form.description" type="textarea" />
           </el-form-item>
           <el-form-item label="图片">
             <el-upload ref="upload" class="upload" action="#" list-type="picture-card" :file-list="fileList" :auto-upload="false">
@@ -65,13 +65,13 @@ export default {
       fileList: [],
       form: {
         groupName: '',
-        introduce: ''
+        description: ''
       },
       rules: {
         groupName: [
           { required: true, message: '请输入模板名称', trigger: 'blur' }
         ],
-        introduce: [
+        description: [
           { required: true, message: '请输入模板介绍', trigger: 'blur' }
         ]
       }

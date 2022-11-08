@@ -12,10 +12,10 @@ public class ConfigConstant {
     public static final String ATTR_ITEM_TEXTAREA = "textarea";
 
     /** 单选 */
-    public static final String ATTR_ITEM_RADIO = "radio";
+    public static final String ATTR_ITEM_RADIO = "single";
 
     /** 多选 */
-    public static final String ATTR_ITEM_CHECKBOX = "checkbox";
+    public static final String ATTR_ITEM_CHECKBOX = "multi";
 
     /** 整数 */
     public static final String ATTR_ITEM_NUMBER = "number";
