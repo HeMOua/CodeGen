@@ -26,3 +26,10 @@ export function selectDictLabel(datas, value) {
   }
   return actions.join('')
 }
+
+// 表单重置
+export function resetForm(refName) {
+  if (this.$refs[refName]) {
+    this.$refs[refName].resetFields()
+  }
+}
