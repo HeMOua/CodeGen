@@ -8,7 +8,11 @@ import 'element-ui/lib/theme-chalk/index.css'
 import 'vxe-table/lib/style.css'
 import '@/assets/styles/index.scss'
 
+import { selectDictLabel } from '@/utils'
+
 Vue.config.productionTip = false
+
+Vue.prototype.selectDictLabel = selectDictLabel
 
 Vue.use(ElementUI)
 Vue.use(VXETable)

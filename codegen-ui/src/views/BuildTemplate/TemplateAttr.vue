@@ -1,64 +1,167 @@
 <template>
   <div>
-    <vxe-table
-      resizable
-      show-overflow
+    <el-row class="toolbar clear" :gutter="10" style="margin-bottom: 5px;">
+      <el-col :span="1.5">
+        <el-button
+          type="danger"
+          plain
+          icon="el-icon-delete"
+          size="mini"
+          :disabled="multiple"
+          @click="handleDelete"
+        >删除</el-button>
+      </el-col>
+    </el-row>
+
+    <el-table
+      ref="table"
+      class="table"
       :data="tableData"
+      style="width: 100%"
+    >
+      <el-table-column type="selection" width="55" align="center" />
+      <el-table-column property="attrName" label="属性名称">
+        <template slot-scope="{row}">
+          <el-input v-model="row.attrName" type="text" placeholder="请输入属性名称" />
+        </template>
+      </el-table-column>
+      <el-table-column property="attrVar" label="属性变量">
+        <template slot-scope="{row}">
+          <el-input v-model="row.attrVar" type="text" placeholder="请输入属性变量" />
+        </template>
+      </el-table-column>
+      <el-table-column property="attrType" label="输入类型">
+        <template slot-scope="{row}">
+          <el-select v-model="row.attrType" placeholder="请选择输入类型">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column label="属性默认值">
+        <template slot-scope="{row}">
+          <el-input v-if="row.attrType == 'text'" :v-model="row.defaultValue" placeholder="无默认值" />
+          <el-input v-if="row.attrType == 'textarea'" :v-model="row.defaultValue" placeholder="无默认值" />
+          <el-select v-if="row.attrType == 'radio'" v-model="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-select v-if="row.attrType == 'checkbox'" v-model="row.defaultValue" multiple placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-input-number v-if="row.attrType == 'number'" v-model="row.defaultValue" controls-position="right" />
+          <el-select v-if="row.attrType == 'boolean'" v-model="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+        </template>
+      </el-table-column>
+      <el-table-column property="introduce" label="属性说明">
+        <template slot-scope="{row}">
+          <el-input v-model="row.introduce" type="text" placeholder="请输入属性说明" />
+        </template>
+      </el-table-column>
+      <el-table-column property="notNull" label="必填" width="90" align="center">
+        <template slot-scope="{row}">
+          <el-checkbox v-model="row.notNull" />
+        </template>
+      </el-table-column>
+      <el-table-column property="configKey" label="配置键" width="90" align="center">
+        <template slot-scope="{row}">
+          <el-checkbox v-model="row.configKey" />
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- <vxe-table
+      class="table"
+      resizable
+      :align="'center'"
+      :data="tableData"
+      :scroll-y="{enabled: false}"
       :edit-config="{trigger: 'click', mode: 'row'}"
     >
       <vxe-column type="checkbox" width="60" />
-      <vxe-column type="seq" width="60" />
-      <vxe-column field="name" title="Name" :edit-render="{autofocus: '.vxe-input--inner'}">
-        <template #edit="{ row }">
-          <vxe-input v-model="row.name" type="text" />
-        </template>
-      </vxe-column>
-      <vxe-column field="role" title="Role" :edit-render="{}">
-        <template #edit="{ row }">
-          <vxe-input v-model="row.role" type="text" placeholder="请输入昵称" />
-        </template>
-      </vxe-column>
-      <vxe-column field="sex" title="Sex" :edit-render="{}">
+      <vxe-column field="attrName" title="属性名称" :edit-render="{autofocus: '.vxe-input--inner'}">
         <template #default="{ row }">
-          <span>{{ formatSex(row.sex) }}</span>
+          <el-input v-model="row.attrName" type="text" placeholder="请输入属性名称" />
         </template>
         <template #edit="{ row }">
-          <vxe-select v-model="row.sex" transfer>
-            <vxe-option v-for="item in sexList" :key="item.value" :value="item.value" :label="item.label" />
-          </vxe-select>
+          <el-input v-model="row.attrName" type="text" placeholder="请输入属性名称" />
         </template>
       </vxe-column>
-      <vxe-column field="sex2" title="多选下拉" :edit-render="{}">
+      <vxe-column field="attrVar" title="属性变量" :edit-render="{autofocus: '.vxe-input--inner'}">
         <template #default="{ row }">
-          <span>{{ formatMultiSex(row.sex2) }}</span>
+          <el-input v-model="row.attrVar" type="text" placeholder="请输入属性变量" />
         </template>
         <template #edit="{ row }">
-          <vxe-select v-model="row.sex2" multiple transfer>
-            <vxe-option v-for="item in sexList" :key="item.value" :value="item.value" :label="item.label" />
-          </vxe-select>
+          <el-input v-model="row.attrVar" type="text" placeholder="请输入属性变量" />
         </template>
       </vxe-column>
-      <vxe-column field="num6" title="Number" :edit-render="{}">
+      <vxe-column field="attrType" title="输入类型" :edit-render="{}">
+        <template #default="{ row }">
+          <el-select v-model="row.attrType" placeholder="请选择输入类型">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+        </template>
         <template #edit="{ row }">
-          <vxe-input v-model="row.num6" type="number" placeholder="请输入数值" />
+          <el-select v-model="row.attrType" placeholder="请选择输入类型">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
         </template>
       </vxe-column>
-      <vxe-column field="date12" title="Date" :edit-render="{}">
+      <vxe-column title="属性默认值" :edit-render="{}">
+        <template #default="{ row }">
+          <el-input v-if="row.attrType == 'text'" :value="row.defaultValue" placeholder="无默认值" />
+          <el-input v-if="row.attrType == 'textarea'" :value="row.defaultValue" placeholder="无默认值" />
+          <el-select v-if="row.attrType == 'radio'" :value="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-select v-if="row.attrType == 'checkbox'" :value="row.defaultValue" multiple placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-input-number v-if="row.attrType == 'number'" :value="row.defaultValue" controls-position="right" />
+          <el-select v-if="row.attrType == 'boolean'" :value="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+        </template>
         <template #edit="{ row }">
-          <vxe-input v-model="row.date12" type="date" placeholder="请选择日期" transfer />
+          <el-input v-if="row.attrType == 'text'" :v-model="row.defaultValue" placeholder="无默认值" />
+          <el-input v-if="row.attrType == 'textarea'" :v-model="row.defaultValue" placeholder="无默认值" />
+          <el-select v-if="row.attrType == 'radio'" v-model="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-select v-if="row.attrType == 'checkbox'" v-model="row.defaultValue" multiple placeholder="无默认值">
+            <el-option v-for="item in attrItemTypeList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
+          <el-input-number v-if="row.attrType == 'number'" v-model="row.defaultValue" controls-position="right" />
+          <el-select v-if="row.attrType == 'boolean'" v-model="row.defaultValue" placeholder="无默认值">
+            <el-option v-for="item in booleanList" :key="item.value" :value="item.value" :label="item.label" />
+          </el-select>
         </template>
       </vxe-column>
-      <vxe-column field="date13" title="Week" :edit-render="{}">
+      <vxe-column field="introduce" title="属性说明" :edit-render="{autofocus: '.vxe-input--inner'}">
+        <template #default="{ row }">
+          <el-input v-model="row.introduce" type="text" placeholder="请输入属性说明" />
+        </template>
         <template #edit="{ row }">
-          <vxe-input v-model="row.date13" type="week" placeholder="请选择日期" transfer />
+          <el-input v-model="row.introduce" type="text" placeholder="请输入属性说明" />
         </template>
       </vxe-column>
-      <vxe-column field="address" title="Address" :edit-render="{}">
+      <vxe-column field="notNull" title="必填" :edit-render="{}">
+        <template #default="{ row }">
+          <el-checkbox :value="row.notNull" />
+        </template>
         <template #edit="{ row }">
-          <vxe-input v-model="row.address" type="text" />
+          <el-checkbox v-model="row.notNull" />
         </template>
       </vxe-column>
-    </vxe-table>
+      <vxe-column field="configKey" title="配置键" :edit-render="{}">
+        <template #default="{ row }">
+          <el-checkbox :value="row.configKey" />
+        </template>
+        <template #edit="{ row }">
+          <el-checkbox v-model="row.configKey" />
+        </template>
+      </vxe-column>
+    </vxe-table> -->
   </div>
 </template>
 
@@ -67,43 +170,39 @@ export default {
   name: 'TemplateAttr',
   data() {
     return {
+      multiple: false,
       tableData: [
-        { id: 10001, name: 'Test1', nickname: 'T1', role: 'Develop', sex: '0', sex2: ['0'], num1: 40, age: 28, address: 'Shenzhen', date12: '', date13: '' },
-        { id: 10002, name: 'Test2', nickname: 'T2', role: 'Designer', sex: '1', sex2: ['0', '1'], num1: 44, age: 22, address: 'Guangzhou', date12: '', date13: '2020-08-20' },
-        { id: 10003, name: 'Test3', nickname: 'T3', role: 'Test', sex: '0', sex2: ['1'], num1: 200, age: 32, address: 'Shanghai', date12: '2020-09-10', date13: '' },
-        { id: 10004, name: 'Test4', nickname: 'T4', role: 'Designer', sex: '1', sex2: ['1'], num1: 30, age: 23, address: 'Shenzhen', date12: '', date13: '2020-12-04' },
-        { id: 10005, name: 'Test5', nickname: 'T5', role: 'Develop', sex: '0', sex2: ['1', '0'], num1: 20, age: 30, address: 'Shanghai', date12: '2020-09-20', date13: '' },
-        { id: 10006, name: 'Test6', nickname: 'T6', role: 'Designer', sex: '1', sex2: ['0'], num1: 10, age: 21, address: 'Shenzhen', date12: '', date13: '' },
-        { id: 10007, name: 'Test7', nickname: 'T7', role: 'Develop', sex: '0', sex2: ['0'], num1: 5, age: 29, address: 'Shenzhen', date12: '2020-01-02', date13: '2020-09-20' },
-        { id: 10008, name: 'Test8', nickname: 'T8', role: 'PM', sex: '1', sex2: ['0'], num1: 2, age: 35, address: 'Shenzhen', date12: '', date13: '' }
+        {
+          attrType: 'text',
+          defaultValue: undefined
+        }
       ],
-      sexList: [
-        { label: '', value: '' },
-        { label: '男', value: '1' },
-        { label: '女', value: '0' }
+      attrItemTypeList: [
+        { label: '文本', value: 'text' },
+        { label: '文本域', value: 'textarea' },
+        { label: '单选', value: 'radio' },
+        { label: '多选', value: 'checkbox' },
+        { label: '整数', value: 'number' },
+        { label: '布尔', value: 'boolean' }
+      ],
+      booleanList: [
+        { label: '是', value: true },
+        { label: '否', value: false }
       ]
     }
   },
   methods: {
-    formatSex(value) {
-      if (value === '1') {
-        return '男'
-      }
-      if (value === '0') {
-        return '女'
-      }
-      return ''
-    },
-    formatMultiSex(values) {
-      if (values) {
-        return values.map(val => this.formatSex(val)).join(',')
-      }
-      return ''
+    handleDelete() {
+      console.log(this.tableData)
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
+.table {
+  ::v-deep .el-input-number {
+    width: 100%;
+  }
+}
 </style>
