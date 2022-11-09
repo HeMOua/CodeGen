@@ -55,3 +55,16 @@ export function deepClone(source) {
   })
   return targetObj
 }
+
+// 根据索引批量删除元素
+export function batchDelete(dataList, indexs) {
+  const reverseIndex = indexs.sort().reverse()
+  for (const index of reverseIndex) {
+    dataList.splice(index, 1)
+  }
+}
+
+// 判断数据是否有重复值
+export function checkDuplicates(array) {
+  return new Set(array).size !== array.length
+}

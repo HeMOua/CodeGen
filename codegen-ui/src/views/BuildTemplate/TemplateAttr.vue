@@ -27,11 +27,12 @@
       class="table"
       :data="tableData"
       style="width: 100%"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="#" width="55">
         <template slot-scope="scope">
-          <span>{{ scope.$index }}</span>
+          <span>{{ scope.$index + 1 }}</span>
         </template>
       </el-table-column>
       <el-table-column property="attrName" label="属性名称">
@@ -85,7 +86,7 @@
     </el-table>
 
     <!-- 添加属性选项对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body :before-close="resetAttrItem">
+    <el-dialog :title="title" :visible.sync="open" width="680px" append-to-body>
       <el-row class="toolbar clear" :gutter="10" style="margin-bottom: 5px;">
         <el-col :span="1.5">
           <el-button
@@ -93,8 +94,8 @@
             plain
             icon="el-icon-plus"
             size="mini"
-            @click="handleAddAttrItemRow"
-          >新增</el-button>
+            @click="handleAddItemRow"
+          >新增选项</el-button>
         </el-col>
         <el-col :span="1.5">
           <el-button
@@ -103,15 +104,22 @@
             icon="el-icon-delete"
             size="mini"
             :disabled="attrMultiple"
-            @click="handleDeleteAttrItemRow"
+            @click="handleDeleteItemRow"
           >删除选项</el-button>
         </el-col>
       </el-row>
       <el-table
         ref="table"
-        :data="temp"
+        :data="itemList"
         style="width: 100%"
+        @selection-change="handleItemSelectionChange"
       >
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="#" width="55">
+          <template slot-scope="scope">
+            <span>{{ scope.$index + 1 }}</span>
+          </template>
+        </el-table-column>
         <el-table-column property="name" label="选项名称">
           <template slot-scope="{row}">
             <el-input v-model="row.name" type="text" placeholder="请输入选项名称" />
@@ -129,7 +137,7 @@
         </el-table-column>
       </el-table>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitItemAttr">确 定</el-button>
+        <el-button type="primary" @click="submitItem">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -137,7 +145,7 @@
 </template>
 
 <script>
-// import { deepClone } from '@/utils'
+import { deepClone, batchDelete, checkDuplicates } from '@/utils'
 
 export default {
   name: 'TemplateAttr',
@@ -145,6 +153,8 @@ export default {
     return {
       lock: false,
       selectIndex: -1,
+      selectList: [],
+      itemSelectList: [],
       title: '',
       open: false,
       multiple: true,
@@ -170,7 +180,7 @@ export default {
         { label: '是', value: true },
         { label: '否', value: false }
       ],
-      temp: undefined
+      itemList: undefined
     }
   },
   methods: {
@@ -184,7 +194,8 @@ export default {
       this.selectIndex = index
       if (['single', 'multi'].indexOf(type) !== -1) {
         const typeMap = { 'single': '单选', 'multi': '多选' }
-        this.temp = this.tableData[index]
+        this.reset()
+        this.tableData[index].defaultValue = undefined
         this.title = `录入${typeMap[type]}选项属性`
         this.open = true
       } else if (type === 'number') {
@@ -213,28 +224,61 @@ export default {
       }
       this.tableData.push(item)
     },
-    handleAddAttrItemRow() {
-      // const item = {
-      //   name: undefined,
-      //   value: undefined,
-      //   description: undefined
-      // }
-      // this.attrItemObj.data.push(item)
+    handleAddItemRow() {
+      const item = {
+        name: undefined,
+        value: undefined,
+        description: undefined
+      }
+      this.itemList.push(item)
     },
-    handleDeleteAttrItemRow() {
-
+    handleDeleteItemRow() {
+      const index = this.itemSelectList
+      this.$modal.confirm('是否确认删除序号为"' + index.map(i => i + 1) + '"的属性选项？').then(() => {
+        batchDelete(this.tableData, index)
+      }).catch(() => {})
     },
     handleDelete() {
+      const index = this.selectList
+      this.$modal.confirm('是否确认删除序号为"' + index.map(i => i + 1) + '"的属性项？').then(() => {
+        batchDelete(this.tableData, index)
+      }).catch(() => {})
     },
-    submitItemAttr() {
-
+    // 多选框选中数据
+    handleSelectionChange(selection) {
+      const selectList = []
+      for (const item of selection) {
+        selectList.push(this.tableData.indexOf(item))
+      }
+      this.selectList = selectList
+      this.multiple = !selection.length
+    },
+    // 多选框选中数据
+    handleItemSelectionChange(selection) {
+      const selectList = []
+      for (const item of selection) {
+        selectList.push(this.tableData.indexOf(item))
+      }
+      this.itemSelectList = selectList
+      this.multiple = !selection.length
+    },
+    submitItem() {
+      const values = this.itemList.filter(item => item.value).map(item => item.value)
+      if (checkDuplicates(values)) {
+        this.$modal.notifyWarning('不允许存在重复的选项值!')
+        return
+      }
+      this.tableData[this.selectIndex].items = this.itemList.filter(item => {
+        return item.name && item.value
+      })
+      this.open = false
     },
     cancel() {
       this.open = false
       this.reset()
     },
-    resetAttrItem() {
-
+    reset() {
+      this.itemList = deepClone(this.tableData[this.selectIndex].items)
     }
   }
 }
