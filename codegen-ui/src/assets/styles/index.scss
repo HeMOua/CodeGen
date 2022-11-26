@@ -1,3 +1,4 @@
+@import './variable.scss';
 @import './custom.scss';
 @import './common.scss';
 @import './transition.scss';
@@ -8,6 +9,7 @@
 }
 
 body {
+  min-width: 500px;
   height: 100%;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -65,4 +67,26 @@ div:focus {
 // main-container global css
 .app-container {
   padding: 0 20px 20px;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background-color: #fff;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: #ccc;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
 }

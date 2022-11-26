@@ -1,6 +1,13 @@
 <template>
   <div>
-    <el-input-number v-model="num" @change="test" />
+    <Split v-model="split">
+      <template #left>
+        asdfas
+      </template>
+      <template #right>
+        asdfa
+      </template>
+    </Split>
   </div>
 </template>
 

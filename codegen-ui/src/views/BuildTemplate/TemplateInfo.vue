@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pr-20">
     <el-card>
       <div slot="header">
         <span class="title">模板信息</span>

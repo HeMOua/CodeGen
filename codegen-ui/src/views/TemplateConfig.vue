@@ -72,7 +72,7 @@
 
     <div class="waterfall">
       <div v-for="i in 10" :key="'b'+i" class="item" :class="{'is-checked': isChecked(i)}" :style="{width: width + 'px'}">
-        <img :src="require('@/assets/logo.png')" alt="">
+        <img :src="require('@/assets/images/logo.png')" alt="">
         <div>
           <div class="title">tkMybatis三层架构代码生成</div>
           <div class="content">福娃链接可阿萨德阿斯顿法师法师分解拉三暗示法发顺丰大是否大是大非季度福利卡聚少离多咖啡机阿萨德</div>

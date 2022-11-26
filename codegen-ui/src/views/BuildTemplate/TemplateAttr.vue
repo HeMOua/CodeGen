@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-row class="toolbar clear" :gutter="10" style="margin-bottom: 5px;">
+  <div class="pr-20">
+    <el-row class="toolbar clear mb-10" :gutter="10">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -195,12 +195,12 @@ export default {
       if (['single', 'multi'].indexOf(type) !== -1) {
         const typeMap = { 'single': '单选', 'multi': '多选' }
         this.reset()
-        this.tableData[index].defaultValue = undefined
+        this.tableData[index].defaultValue = ''
         this.title = `录入${typeMap[type]}选项属性`
         this.open = true
       } else if (type === 'number') {
         if (isNaN(+this.tableData[index].defaultValue)) {
-          this.tableData[index].defaultValue = undefined
+          this.tableData[index].defaultValue = ''
         } else {
           this.tableData[index].defaultValue = +this.tableData[index].defaultValue
         }
@@ -235,7 +235,7 @@ export default {
     handleDeleteItemRow() {
       const index = this.itemSelectList
       this.$modal.confirm('是否确认删除序号为"' + index.map(i => i + 1) + '"的属性选项？').then(() => {
-        batchDelete(this.tableData, index)
+        batchDelete(this.itemList, index)
       }).catch(() => {})
     },
     handleDelete() {
@@ -260,10 +260,14 @@ export default {
         selectList.push(this.tableData.indexOf(item))
       }
       this.itemSelectList = selectList
-      this.multiple = !selection.length
+      this.attrMultiple = !selection.length
     },
     submitItem() {
       const values = this.itemList.filter(item => item.value).map(item => item.value)
+      if (!values || values.length === 0) {
+        this.$modal.notifyWarning('请输入有效的选项值!')
+        return
+      }
       if (checkDuplicates(values)) {
         this.$modal.notifyWarning('不允许存在重复的选项值!')
         return

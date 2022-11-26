@@ -66,7 +66,7 @@ export default {
   display: inline-block;
   font-size: 14px;
   line-height: 50px;
-  margin-left: 8px;
+  margin-left: 30px;
   .no-redirect {
     color: #97a8be;
     cursor: text;

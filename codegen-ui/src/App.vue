@@ -4,8 +4,8 @@
       <router-link class="item" :class="{active: isActive}" to="/templateConfig">模板配置</router-link>
       <router-link class="item" to="/generatorConfig">代码生成</router-link>
     </div>
-    <div class="app-container">
-      <Breadcrumb class="breadcrumb-container" />
+    <Breadcrumb class="breadcrumb-container" />
+    <div :class="{'app-container': $route.path !== '/buildTemplate'}">
       <router-view />
     </div>
   </div>
@@ -29,6 +29,7 @@ export default {
   position: relative;
   display: flex;
   justify-content: center;
+  height: 70px;
   & .item {
     font-size: 28px;
     padding: 20px 20px 0;

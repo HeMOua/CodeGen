@@ -5,10 +5,10 @@
       <el-button icon="el-icon-caret-right">预览</el-button>
       <el-button icon="el-icon-s-promotion">提交</el-button>
     </el-button-group>
-    <el-tabs tab-position="left">
+    <el-tabs tab-position="left" class="ml-10">
       <el-tab-pane label="模板信息"><TemplateInfo /></el-tab-pane>
       <el-tab-pane label="属性"><TemplateAttr /></el-tab-pane>
-      <el-tab-pane label="代码">Role</el-tab-pane>
+      <el-tab-pane label="代码"><TemplateCode /></el-tab-pane>
       <el-tab-pane label="使用文档">Task</el-tab-pane>
     </el-tabs>
   </div>
@@ -17,11 +17,12 @@
 <script>
 import TemplateInfo from './TemplateInfo.vue'
 import TemplateAttr from './TemplateAttr.vue'
+import TemplateCode from './TemplateCode.vue'
 
 export default {
   name: 'BuildTemplate',
   components: {
-    TemplateInfo, TemplateAttr
+    TemplateInfo, TemplateAttr, TemplateCode
   }
 }
 </script>
@@ -37,7 +38,7 @@ export default {
   }
   .toolbar {
     position: absolute;
-    right: 0;
+    right: 20px;
     top: -45px;
     ::v-deep .el-button {
       padding: 8px 15px;
