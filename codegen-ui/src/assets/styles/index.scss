@@ -10,7 +10,6 @@
 
 body {
   min-width: 500px;
-  height: 100%;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
@@ -66,7 +65,7 @@ div:focus {
 
 // main-container global css
 .app-container {
-  padding: 0 20px 20px;
+  padding: 20px;
 }
 
 /* 滚动条 */

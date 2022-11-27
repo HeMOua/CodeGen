@@ -31,8 +31,8 @@ export default {
     getBreadcrumb() {
       // only show routes with meta.title
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
-      if (this.pathEqual(matched[0], 'buildTemplate')) {
-        matched = [{ path: '/templateConfig', meta: { title: '模板配置' }}].concat(matched)
+      if (!this.pathEqual(matched[0], 'Index')) {
+        matched = [{ path: '/index', meta: { title: '首页' }}].concat(matched)
       }
       this.levelList = matched.filter(item => item.meta && item.meta.title)
     },
@@ -62,10 +62,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '@/assets/styles/variable.scss';
 .app-breadcrumb.el-breadcrumb {
   display: inline-block;
   font-size: 14px;
-  line-height: 50px;
+  line-height: calc($header-height - $padding-v * 2);
   margin-left: 30px;
   .no-redirect {
     color: #97a8be;

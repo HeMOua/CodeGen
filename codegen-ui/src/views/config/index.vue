@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper app-container">
     <el-form ref="queryForm" :model="queryParams" size="small" :inline="true" label-width="68px">
       <el-form-item label="用户名称" prop="userName">
         <el-input
@@ -16,7 +16,7 @@
       </el-form-item>
     </el-form>
 
-    <el-row class="toolbar clear" :gutter="10" style="margin-bottom: 5px;">
+    <el-row class="toolbar" :gutter="10">
       <el-col :span="1.5">
         <el-button
           type="primary"
@@ -64,10 +64,6 @@
           @click="handleExport"
         >导出</el-button>
       </el-col>
-      <div class="righttoolbar right clear">
-        <el-slider v-model="width" :format-tooltip="formatTooltip" :min="200" :max="300" />
-        <el-button icon="el-icon-s-tools" circle />
-      </div>
     </el-row>
 
     <div class="waterfall">
@@ -99,7 +95,7 @@
 
 <script>
 export default {
-  name: 'TemplateConfig',
+  name: 'ConfigIndex',
   data() {
     return {
       ids: [],
@@ -119,15 +115,12 @@ export default {
     handleQuery() {},
     resetQuery() {},
     handleAdd() {
-      this.$router.push('/buildTemplate')
+      this.$router.push('/config/build')
     },
     handleDelete() {},
     handleUpdate() {},
     handleImport() {},
     handleExport() {},
-    formatTooltip(val) {
-      return `${val}px`
-    },
     radioChange(val) {
       if (this.isChecked(val)) {
         this.ids.splice(this.ids.indexOf(val), 1)
@@ -145,18 +138,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.righttoolbar {
-  display: flex;
-  .desc {
-    font-size: 15px;
-    color: #8492a6;
-    line-height: 39px;
-    margin-right: 15px;
-  }
-  .el-slider {
-    display: inline-block;
-    width: 200px;
-    margin-right: 24px;
+.wrapper {
+  height: 100%;
+  .toolbar {
+    margin-bottom: 15px;
   }
 }
 .waterfall {
