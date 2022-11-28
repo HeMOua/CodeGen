@@ -160,26 +160,48 @@
               <el-button icon="el-icon-aim" circle size="small" />
             </div>
             <el-tree
-              :data="data"
+              :data="treeData"
               node-key="id"
               default-expand-all
               draggable
+              :style="minWidth + 'px'"
               :allow-drop="allowDrop"
               :allow-drag="allowDrag"
-              :style="minWidth + 'px'"
-              @node-drag-start="handleDragStart"
-              @node-drag-enter="handleDragEnter"
-              @node-drag-leave="handleDragLeave"
-              @node-drag-over="handleDragOver"
-              @node-drag-end="handleDragEnd"
-              @node-drop="handleDrop"
-            />
+              @node-contextmenu="(a, b, c, e) => handleContextEvent(e)"
+            >
+              <div slot-scope="{ node }" class="tree-node">
+                <span class="tree-node-label">
+                  <SvgIcon icon-class="java" class-name="tree-node-icon" />
+                  <span>{{ node.label }}</span>
+                </span>
+                <span class="tree-node-opera" @click.stop="handleContextEvent($event, true)">
+                  <SvgIcon icon-class="dot" class-name="tree-node-icon" />
+                </span>
+                <div class="tree-node-menu" @click.stop>
+                  <ul>
+                    <li v-if="node.data.type == 'folder'" @click="handleAddNode(node, 'file')">
+                      <SvgIcon icon-class="file" class-name="tree-node-icon" />新建模板
+                    </li>
+                    <li v-if="node.data.type == 'folder'" class="divide-b">
+                      <SvgIcon icon-class="folder" class-name="tree-node-icon" @click="handleAddNode(node, 'folder')" />新建目录
+                    </li>
+                    <li v-if="node.level != 1">
+                      <SvgIcon icon-class="delete" class-name="tree-node-icon" @click="handleDelete(Node)" />删除
+                    </li>
+                    <li v-if="node.level == 1">
+                      <SvgIcon icon-class="empty" class-name="tree-node-icon" @click="handleEmptyTree" />清空
+                    </li>
+                    <li v-if="node.level != 1" class="divide-t">
+                      <SvgIcon icon-class="setting" class-name="tree-node-icon" @click="handleUpdateNode(node)" />设置
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </el-tree>
           </template>
           <template #right>
-            <div class="code-container">
-              <div class="p-20">
-                <el-skeleton :rows="15" />
-              </div>
+            <div class="editor-wrapper">
+              <el-skeleton class="p-20" :rows="8" />
             </div>
           </template>
         </Split>
@@ -297,41 +319,7 @@ export default {
       },
       // 模板代码属性
       filterText: undefined,
-      data: [{
-        label: 'Level one 1',
-        children: [{
-          label: 'Level two 1-1',
-          children: [{
-            label: 'Level three 1-1-1'
-          }]
-        }]
-      }, {
-        label: 'Level one 2',
-        children: [{
-          label: 'Level two 2-1',
-          children: [{
-            label: 'Level three 2-1-1'
-          }]
-        }, {
-          label: 'Level two 2-2',
-          children: [{
-            label: 'Level three 2-2-1'
-          }]
-        }]
-      }, {
-        label: 'Level one 3',
-        children: [{
-          label: 'Level two 3-1',
-          children: [{
-            label: 'Level three 3-1-1'
-          }]
-        }, {
-          label: 'Level two 3-2',
-          children: [{
-            label: 'Level three 3-2-1'
-          }]
-        }]
-      }],
+      treeData: [{ label: '_project.enName', type: 'folder' }],
       defaultProps: {
         children: 'children',
         label: 'label'
@@ -362,6 +350,9 @@ export default {
       ]
     }
   },
+  created() {
+    document.body.addEventListener('click', this.closeContextMenu)
+  },
   methods: {
     // 控制方法
     isActive(item) {
@@ -379,33 +370,42 @@ export default {
       this.open.preview = true
     },
     // 模板代码方法
-    handleDragStart(node, ev) {
-      console.log('drag start', node)
+    addCloseContextEvent() {
+      document.body.addEventListener('click', this.closeContextMenu)
     },
-    handleDragEnter(draggingNode, dropNode, ev) {
-      console.log('tree drag enter: ', dropNode.label)
-    },
-    handleDragLeave(draggingNode, dropNode, ev) {
-      console.log('tree drag leave: ', dropNode.label)
-    },
-    handleDragOver(draggingNode, dropNode, ev) {
-      console.log('tree drag over: ', dropNode.label)
-    },
-    handleDragEnd(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drag end: ', dropNode && dropNode.label, dropType)
-    },
-    handleDrop(draggingNode, dropNode, dropType, ev) {
-      console.log('tree drop: ', dropNode.label, dropType)
-    },
-    allowDrop(draggingNode, dropNode, type) {
-      if (dropNode.data.label === 'Level two 3-1') {
-        return type !== 'inner'
+    handleContextEvent(event, flag) {
+      this.closeContextMenu()
+      let elem
+      if (flag) {
+        elem = event.target.parentNode
+        if (elem.classList.contains('tree-node-opera')) {
+          elem = elem.parentNode
+        } else if (elem.classList.contains('svg-icon')) {
+          elem = elem.parentNode.parentNode
+        }
       } else {
-        return true
+        elem = event.$el
+      }
+      elem = elem.querySelector('.tree-node-menu')
+      if (elem.style.display !== 'block') {
+        elem.style.display = 'block'
+        this.addCloseContextEvent()
       }
     },
+    closeContextMenu() {
+      document.querySelectorAll('.tree-node-menu').forEach(item => {
+        item.style.display = 'none'
+      })
+      document.body.removeEventListener('click', this.closeContextMenu)
+    },
+    allowDrop(draggingNode, dropNode, type) {
+      return dropNode.level !== 1
+    },
     allowDrag(draggingNode) {
-      return draggingNode.data.label.indexOf('Level three 3-1-1') === -1
+      return draggingNode.level !== 1
+    },
+    handleAddNode(node) {
+      console.log(node)
     },
     // 模板属性方法
     isTypeShow(row, type) {
@@ -589,7 +589,7 @@ export default {
 }
 .tplCode {
   .el-tree {
-    height: 100%;
+    height: calc(100% - 42px);
     width: 100%;
     overflow-x: auto;
     ::v-deep .el-tree-node {
@@ -610,6 +610,62 @@ export default {
       .el-input__inner {
         height: 34px;
         line-height: 34px;
+      }
+    }
+  }
+  .editor-wrapper {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
+  ::v-deep .el-tree-node__content {
+    position: relative;
+  }
+  .tree-node {
+    display: flex;
+    flex: 1;
+    padding-right: 8px;
+    align-items: center;
+    justify-content: space-between;
+    .tree-node-icon {
+      height: 16px;
+      width: 16px;
+      margin-right: 4px;
+    }
+    .tree-node-opera {
+      display: none;
+    }
+    &:hover .tree-node-opera {
+      display: inline;
+    }
+    .tree-node-menu {
+      position: absolute;
+      top: 26px;
+      right: 8px;
+      border: 1px solid #ebeef5;
+      background: #fff;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+      width: 160px;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 5px;
+      display: none;
+      padding: 4px 0;
+      ul {
+        list-style: none;
+        li {
+          padding: 0 12px;
+          padding: 6px 12px;
+          &:hover {
+            background-color: #f5f7fa;
+          }
+        }
+        li.divide-b {
+          border-bottom: 1px solid #eee;
+        }
+        li.divide-t {
+          border-top: 1px solid #eee;
+        }
       }
     }
   }

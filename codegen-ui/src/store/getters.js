@@ -1,4 +1,4 @@
 const getters = {
-  sidebar: state => state.app.sidebar
+  theme: state => state.settings.theme
 }
 export default getters

@@ -1,25 +1,21 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
     <scroll-pane ref="scrollPane" class="tags-view-wrapper" @scroll="handleScroll">
-      <router-link
+      <span
         v-for="tag in visitedViews"
         ref="tag"
         :key="tag.path"
         :class="isActive(tag)?'active':''"
-        :to="{ path: tag.path, query: tag.query, fullPath: tag.fullPath }"
-        tag="span"
         class="tags-view-item"
         :style="activeStyle(tag)"
-        @click.middle.native="!isAffix(tag)?closeSelectedTag(tag):''"
-        @contextmenu.prevent.native="openMenu(tag,$event)"
+        @click.middle.native="closeSelectedTag(tag)"
+        @contextmenu.prevent.native="openMenu(tag, $event)"
       >
         {{ tag.title }}
-        <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
-      </router-link>
+        <span class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
+      </span>
     </scroll-pane>
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-      <li @click="refreshSelectedTag(selectedTag)"><i class="el-icon-refresh-right" /> 刷新页面</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)"><i class="el-icon-close" /> 关闭当前</li>
       <li @click="closeOthersTags"><i class="el-icon-circle-close" /> 关闭其他</li>
       <li v-if="!isFirstView()" @click="closeLeftTags"><i class="el-icon-back" /> 关闭左侧</li>
       <li v-if="!isLastView()" @click="closeRightTags"><i class="el-icon-right" /> 关闭右侧</li>
@@ -40,16 +36,12 @@ export default {
       visible: false,
       top: 0,
       left: 0,
-      selectedTag: {},
-      affixTags: []
+      selectedTag: {}
     }
   },
   computed: {
     visitedViews() {
       return this.$store.state.tagsView.visitedViews
-    },
-    routes() {
-      return this.$store.state.permission.routes
     },
     theme() {
       return this.$store.state.settings.theme
@@ -82,9 +74,6 @@ export default {
         'background-color': this.theme,
         'border-color': this.theme
       }
-    },
-    isAffix(tag) {
-      return tag.meta && tag.meta.affix
     },
     isFirstView() {
       try {
@@ -121,15 +110,6 @@ export default {
       })
       return tags
     },
-    initTags() {
-      const affixTags = this.affixTags = this.filterAffixTags(this.routes)
-      for (const tag of affixTags) {
-        // Must have tag name
-        if (tag.name) {
-          this.$store.dispatch('tagsView/addVisitedView', tag)
-        }
-      }
-    },
     addTags() {
       const { name } = this.$route
       if (name) {
@@ -154,12 +134,6 @@ export default {
           }
         }
       })
-    },
-    refreshSelectedTag(view) {
-      this.$tab.refreshPage(view)
-      if (this.$route.meta.link) {
-        this.$store.dispatch('tagsView/delIframeView', this.$route)
-      }
     },
     closeSelectedTag(view) {
       this.$tab.closePage(view).then(({ visitedViews }) => {

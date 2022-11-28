@@ -1,6 +1,6 @@
 package com.hemou.server.common.core.domain;
 
-import com.hemou.server.common.constants.Constant;
+import com.hemou.server.common.constants.Constants;
 
 import java.util.HashMap;
 
@@ -17,7 +17,7 @@ public class RespResult extends HashMap<String, Object> {
     }
 
     public static RespResult success(String msg, Object data) {
-        return new RespResult(Constant.SUCCESS, msg, data);
+        return new RespResult(Constants.SUCCESS, msg, data);
     }
 
     public static RespResult success(Object data) {
@@ -29,7 +29,7 @@ public class RespResult extends HashMap<String, Object> {
     }
 
     public static RespResult error(String msg, Object data) {
-        return new RespResult(Constant.ERROR, msg, data);
+        return new RespResult(Constants.ERROR, msg, data);
     }
 
     public static RespResult error(String msg) {

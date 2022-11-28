@@ -8,8 +8,9 @@ import mavonEditor from 'mavon-editor'
 import plugins from '@/plugins'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'view-design/dist/styles/iview.css'
-import '@/assets/styles/index.scss'
 import 'mavon-editor/dist/css/index.css'
+import '@/assets/styles/index.scss'
+import '@/assets/icons'
 
 import { selectDictLabel, resetForm } from '@/utils'
 

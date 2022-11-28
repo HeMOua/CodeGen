@@ -3,7 +3,7 @@ package com.hemou.server.common.core.controller;
 import cn.hutool.core.util.ObjectUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.hemou.server.common.constants.Constant;
+import com.hemou.server.common.constants.Constants;
 import com.hemou.server.common.core.domain.RespResult;
 import com.hemou.server.common.core.page.TableDataInfo;
 import com.hemou.server.common.utils.ServletUtils;
@@ -14,8 +14,8 @@ public class BaseController {
 
     // 开始分页
     protected void startPage() {
-        Integer pageNum = ServletUtils.getParameterToInt(Constant.PAGE_NUM);
-        Integer pageSize = ServletUtils.getParameterToInt(Constant.PAGE_SIZE);
+        Integer pageNum = ServletUtils.getParameterToInt(Constants.PAGE_NUM);
+        Integer pageSize = ServletUtils.getParameterToInt(Constants.PAGE_SIZE);
         if (ObjectUtil.isNotNull(pageNum) && ObjectUtil.isNotNull(pageSize)) {
             PageHelper.startPage(pageNum, pageSize);
         }
@@ -24,7 +24,7 @@ public class BaseController {
     // 返回分页数据
     protected TableDataInfo getTableData(List<?> list) {
         TableDataInfo tableData = new TableDataInfo();
-        tableData.setCode(Constant.SUCCESS);
+        tableData.setCode(Constants.SUCCESS);
         tableData.setRows(list);
         tableData.setTotal(new PageInfo<>(list).getTotal());
         return tableData;
